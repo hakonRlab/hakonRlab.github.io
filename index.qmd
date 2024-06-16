@@ -6,6 +6,12 @@ title: "hakonRlab.github.io"
 
 A lymph node invasion prediction model for prostate cancer patients
 
+Sample size calculations. I have just been doing some testing.
+
 ```{r}
-1 + 1
+library(pmsampsize)
+out <- pmsampsize(type = "b", cstatistic  = 0.8, parameters = 20, prevalence = 0.25, shrinkage = 0.8)
+out <- pmsampsize_bin(type = "b", cstatistic  = 0.8, parameters = 10, prevalence = 0.25, shrinkage = 0.8, sad = 0.1)
+out$results_table
+
 ```
