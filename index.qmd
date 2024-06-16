@@ -37,10 +37,10 @@ akermodellenAlle <- stackMI(formula = pN ~ rcs(PSAutredn,4)*rcs(ProstVolum,4) + 
 plot(anova(akermodellenAlle)) # Relative explained variation of variables
 ```
 
-Variable selection validation
+Variable selection with the projpred package
 
 ```{r, eval=FALSE}
-options(prType='html')
+library(projpred)
 
 plot(anova(akermodellenAlle),  cex.lab = 1.2, cex.axis = 12)
 
@@ -87,3 +87,22 @@ The [Evaluating a logistic regression based prediction tool in R](https://darren
 ```
 
 The resources at [Decission Curve Analyses](https://mskcc-epi-bio.github.io/decisioncurveanalysis/dca-tutorial.html) was used as a guideline for our net reduction analyses.
+
+```{r}
+
+ploty
+```
+
+MSKCC
+
+```{r}
+
+```
+
+Briganti 2012
+
+```{r}
+
+```
+
+Briganti 2019
