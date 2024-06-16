@@ -6,11 +6,84 @@ title: "hakonRlab.github.io"
 
 A lymph node invasion prediction model for prostate cancer patients
 
-Sample size calculations. I have just been doing some testing.
+Sample size calculation was done using the pmsampsize package. None of the evaluated models have published the R^2^ so this was not included in our sample size calulation
 
-```{r}
-#library(pmsampsize)
-#out <- pmsampsize(type = "b", cstatistic  = 0.8, parameters = 20, prevalence = 0.25, shrinkage = 0.8)
-#out$results_table
+```{r, eval=FALSE}
+library(pmsampsize)
+out <- pmsampsize(type = "b", cstatistic  = 0.8, parameters = 20, prevalence = 0.25, shrinkage = 0.8)
+out$results_table
 
 ```
+
+Imputing missing values with rmsb package
+
+```{r, eval=FALSE}
+library(rmsb)
+
+set.seed(1999)         
+mi <- aregImpute(~ pN + PSAutredn + ISUP3 + ISUP4 + ISUP5 + cT2a  + cT2b + cT2c + cT3 + PIRADS4 + PIRADS5  + cT_mr3a + cT_mr3b + MRindexTumorL1 + ProstVolum + BMI,
+                 data=plndbayes_mrpNimp, n.impute=10, nk=3, pr=FALSE)
+
+mi <- aregImpute(~ pN + PSAutredn + ISUP + PIRADS345  + mr_cT + MRindexTumorL1 + ProstVolum + dre_cT + BMI + PercPosCores, data=plndbayes_mrpNimp, n.impute=10, nk=4, pr=FALSE, boot.method = 'approximate bayesian')
+```
+
+Bayesian logistic regression model development followed many suggestions from the [Regression Modeling Strategies](https://hbiostat.org/rmsc/) by Frank Harrell. Used the rmsb package and the imputed data sets generated in the previous code chunk.
+
+```{r, eval=FALSE}
+akermodellenAlle <- stackMI(formula = pN ~ rcs(PSAutredn,4)*rcs(ProstVolum,4) + ISUP  + dre_cT  + PIRADS345  + mr_cT + rcs(MRindexTumorL1,4)  + rcs(BMI,4) +
+                              rcs(PercPosCores,4), fitter = blrm, xtrans = mi, data=plndbayes_mrpNimp, iter = 4000, warmup = 2000 , chain = 4, file='akermodellenAlle.RDS')
+
+
+plot(anova(akermodellenAlle)) # Relative explained variation of variables
+```
+
+Variable selection validation
+
+```{r, eval=FALSE}
+options(prType='html')
+
+plot(anova(akermodellenAlle),  cex.lab = 1.2, cex.axis = 12)
+
+plot(anova(akermodellen2),  cex.lab = 1.2, cex.axis = 12)
+
+akaerteset <- vcov(akermodellenAlle, regcoef.only = TRUE, intercepts = "all")
+
+akertest <- brms::get_refmodel.brmsfit(akermodellenAlle)
+
+
+cvvs_imp1 <- cv_varsel(m3varsel,
+                       validate_search = FALSE,
+                       method = "forward",
+                       ncluster_pred = 20,
+                       nterms_max = 20,
+                       verbose = FALSE)
+plot(cvvs_imp1, stats = "mlpd", ranking_ntrems_max = NA)
+
+plot(anova(akermodellen1))
+
+
+val_aker_anov <- processMI(akermodellen, 'anova')
+val_aker <- validate(akermodellenAlle, B=150, bw=TRUE, rule = 'p', sls = 0.1, type = 'individual')
+
+
+cvvs_imp1 <- cv_varsel(m3varsel,
+                       cv_method = "kfold",
+                       method ="forward",
+                       k=10,
+                       ncluster_pred = 20,
+                       nterms_max = 9,
+                       parallel = TRUE,
+                       verbose = FALSE)
+
+plot(cvvs_imp1, stats = "mlpd", deltas  = TRUE)
+
+suggest_size(cvvs_imp1)
+```
+
+The [Evaluating a logistic regression based prediction tool in R](https://darrendahly.github.io/post/homr) by Darren Dahly was used with minor modifications of the calibration plots.
+
+```{r, eval=FALSE}
+
+```
+
+The resources at [Decission Curve Analyses](https://mskcc-epi-bio.github.io/decisioncurveanalysis/dca-tutorial.html) was used as a guideline for our net reduction analyses.
