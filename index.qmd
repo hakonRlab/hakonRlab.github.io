@@ -6,7 +6,7 @@ title: "hakonRlab.github.io"
 
 A lymph node invasion prediction model for prostate cancer patients
 
-Sample size calculation was done using the pmsampsize package. None of the evaluated models have published the R^2^ so this was not included in our sample size calulation
+Sample size calculation was done using the pmsampsize package. None of the evaluated models have published the R^2^ so this was not included in our sample size calulation.
 
 ```{r, eval=FALSE}
 library(pmsampsize)
@@ -30,11 +30,13 @@ mi <- aregImpute(~ pN + PSAutredn + ISUP + PIRADS345  + mr_cT + MRindexTumorL1 +
 Bayesian logistic regression model development followed many suggestions from the [Regression Modeling Strategies](https://hbiostat.org/rmsc/) by Frank Harrell. Used the rmsb package and the imputed data sets generated in the previous code chunk.
 
 ```{r, eval=FALSE}
-akermodellenAlle <- stackMI(formula = pN ~ rcs(PSAutredn,4)*rcs(ProstVolum,4) + ISUP  + dre_cT  + PIRADS345  + mr_cT + rcs(MRindexTumorL1,4)  + rcs(BMI,4) +
-                              rcs(PercPosCores,4), fitter = blrm, xtrans = mi, data=plndbayes_mrpNimp, iter = 4000, warmup = 2000 , chain = 4, file='akermodellenAlle.RDS')
+OslomodelFull <- stackMI(formula = pN ~ rcs(PSA,4)*rcs(ProstateVolume,4) + ISUP  + dre_cT  + PIRADS345  + mr_cT + rcs(MRindexTumorL1,4)  + rcs(BMI,4) +
+                              rcs(PercPosCores,4), fitter = blrm, xtrans = mi, data=plndbayes_mrpNimp, iter = 4000, warmup = 2000 , chain = 4, file='OslomodelFull.RDS')
 
 
 plot(anova(akermodellenAlle)) # Relative explained variation of variables
+
+OslomodelFinal <- stackMI(formula = pN ~ rcs(PSA,4)*rcs(ProstateVolume,4) + ISUP + mr_cT + rcs(MRindexTumorL1,4), fitter = blrm, xtrans = mi, data=plndbayes_mrpNimp, iter = 4000, warmup = 2000 , chain = 4, file='OslomodellenFinal.RDS')
 ```
 
 Variable selection with the projpred package
@@ -88,21 +90,41 @@ The [Evaluating a logistic regression based prediction tool in R](https://darren
 
 The resources at [Decission Curve Analyses](https://mskcc-epi-bio.github.io/decisioncurveanalysis/dca-tutorial.html) was used as a guideline for our net reduction analyses.
 
-```{r}
+```{r, eval=TRUE}
+library(dcurves)
+library(plotly)
+library(ggplot2)
+load("imp8dca")
+oslo <- dca(pN ~ predprob + bri2019 + bri2019recal + bri2019refit, data = imp8dca,
+    thresholds = seq(0, 0.4, 0.01),
+    label = list(predprob = "Oslo model",
+                 bri2019 = "Briganti 2019",
+                 bri2019recal = "Briganti 2019 recalibrated",
+                 bri2019refit = "Briganti 2019 refited")
+    ) %>% 
+  net_intervention_avoided() %>% 
+  plot(smooth = TRUE, show_ggplot_code = TRUE)+
+  ggplot2::coord_cartesian(ylim = c(-0.05, 0.4))+
+  ggplot2::theme(text = element_text(size=16))
+ 
+ggplotly(oslo)
 
-ploty
 ```
 
 MSKCC
 
-```{r}
+```{r, eval=FALSE}
 
 ```
 
 Briganti 2012
 
-```{r}
+```{r, eval=FALSE}
 
 ```
 
 Briganti 2019
+
+```{r, eval=FALSE}
+
+```
