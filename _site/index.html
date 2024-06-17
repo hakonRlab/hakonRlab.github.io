@@ -175,19 +175,100 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="the-oslo-model" class="level3">
 <h3 class="anchored" data-anchor-id="the-oslo-model"><strong>The Oslo model</strong></h3>
 <p>A lymph node invasion prediction model for prostate cancer patients</p>
-<p>Sample size calculations. I have just been doing some testing.</p>
+<p>Sample size calculation was done using the pmsampsize package. None of the evaluated models have published the R<sup>2</sup> so this was not included in our sample size calulation.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pmsampsize)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">pmsampsize</span>(<span class="at">type =</span> <span class="st">"b"</span>, <span class="at">cstatistic  =</span> <span class="fl">0.8</span>, <span class="at">parameters =</span> <span class="dv">20</span>, <span class="at">prevalence =</span> <span class="fl">0.25</span>, <span class="at">shrinkage =</span> <span class="fl">0.8</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>out<span class="sc">$</span>results_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>           Samp_size Shrinkage Parameter CS_Rsq Max_Rsq Nag_Rsq  EPP
-Criteria 1       334      0.80        20 0.2075   0.675   0.307 4.18
-Criteria 2       518      0.86        20 0.2075   0.675   0.307 6.47
-Criteria 3       289      0.86        20 0.2075   0.675   0.307 3.61
-Final            518      0.86        20 0.2075   0.675   0.307 6.47</code></pre>
 </div>
+<p>Imputing missing values with rmsb package</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rmsb)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1999</span>)         </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>mi <span class="ot">&lt;-</span> <span class="fu">aregImpute</span>(<span class="sc">~</span> pN <span class="sc">+</span> PSAutredn <span class="sc">+</span> ISUP3 <span class="sc">+</span> ISUP4 <span class="sc">+</span> ISUP5 <span class="sc">+</span> cT2a  <span class="sc">+</span> cT2b <span class="sc">+</span> cT2c <span class="sc">+</span> cT3 <span class="sc">+</span> PIRADS4 <span class="sc">+</span> PIRADS5  <span class="sc">+</span> cT_mr3a <span class="sc">+</span> cT_mr3b <span class="sc">+</span> MRindexTumorL1 <span class="sc">+</span> ProstVolum <span class="sc">+</span> BMI,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data=</span>plndbayes_mrpNimp, <span class="at">n.impute=</span><span class="dv">10</span>, <span class="at">nk=</span><span class="dv">3</span>, <span class="at">pr=</span><span class="cn">FALSE</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>mi <span class="ot">&lt;-</span> <span class="fu">aregImpute</span>(<span class="sc">~</span> pN <span class="sc">+</span> PSAutredn <span class="sc">+</span> ISUP <span class="sc">+</span> PIRADS345  <span class="sc">+</span> mr_cT <span class="sc">+</span> MRindexTumorL1 <span class="sc">+</span> ProstVolum <span class="sc">+</span> dre_cT <span class="sc">+</span> BMI <span class="sc">+</span> PercPosCores, <span class="at">data=</span>plndbayes_mrpNimp, <span class="at">n.impute=</span><span class="dv">10</span>, <span class="at">nk=</span><span class="dv">4</span>, <span class="at">pr=</span><span class="cn">FALSE</span>, <span class="at">boot.method =</span> <span class="st">'approximate bayesian'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>Bayesian logistic regression model development followed many suggestions from the <a href="https://hbiostat.org/rmsc/">Regression Modeling Strategies</a> by Frank Harrell. Used the rmsb package and the imputed data sets generated in the previous code chunk.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>OslomodelFull <span class="ot">&lt;-</span> <span class="fu">stackMI</span>(<span class="at">formula =</span> pN <span class="sc">~</span> <span class="fu">rcs</span>(PSA,<span class="dv">4</span>)<span class="sc">*</span><span class="fu">rcs</span>(ProstateVolume,<span class="dv">4</span>) <span class="sc">+</span> ISUP  <span class="sc">+</span> dre_cT  <span class="sc">+</span> PIRADS345  <span class="sc">+</span> mr_cT <span class="sc">+</span> <span class="fu">rcs</span>(MRindexTumorL1,<span class="dv">4</span>)  <span class="sc">+</span> <span class="fu">rcs</span>(BMI,<span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                              <span class="fu">rcs</span>(PercPosCores,<span class="dv">4</span>), <span class="at">fitter =</span> blrm, <span class="at">xtrans =</span> mi, <span class="at">data=</span>plndbayes_mrpNimp, <span class="at">iter =</span> <span class="dv">4000</span>, <span class="at">warmup =</span> <span class="dv">2000</span> , <span class="at">chain =</span> <span class="dv">4</span>, <span class="at">file=</span><span class="st">'OslomodelFull.RDS'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">anova</span>(akermodellenAlle)) <span class="co"># Relative explained variation of variables</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>OslomodelFinal <span class="ot">&lt;-</span> <span class="fu">stackMI</span>(<span class="at">formula =</span> pN <span class="sc">~</span> <span class="fu">rcs</span>(PSA,<span class="dv">4</span>)<span class="sc">*</span><span class="fu">rcs</span>(ProstateVolume,<span class="dv">4</span>) <span class="sc">+</span> ISUP <span class="sc">+</span> mr_cT <span class="sc">+</span> <span class="fu">rcs</span>(MRindexTumorL1,<span class="dv">4</span>), <span class="at">fitter =</span> blrm, <span class="at">xtrans =</span> mi, <span class="at">data=</span>plndbayes_mrpNimp, <span class="at">iter =</span> <span class="dv">4000</span>, <span class="at">warmup =</span> <span class="dv">2000</span> , <span class="at">chain =</span> <span class="dv">4</span>, <span class="at">file=</span><span class="st">'OslomodellenFinal.RDS'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Variable selection with the projpred package</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(projpred)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">anova</span>(akermodellenAlle),  <span class="at">cex.lab =</span> <span class="fl">1.2</span>, <span class="at">cex.axis =</span> <span class="dv">12</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">anova</span>(akermodellen2),  <span class="at">cex.lab =</span> <span class="fl">1.2</span>, <span class="at">cex.axis =</span> <span class="dv">12</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>akaerteset <span class="ot">&lt;-</span> <span class="fu">vcov</span>(akermodellenAlle, <span class="at">regcoef.only =</span> <span class="cn">TRUE</span>, <span class="at">intercepts =</span> <span class="st">"all"</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>akertest <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">get_refmodel.brmsfit</span>(akermodellenAlle)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>cvvs_imp1 <span class="ot">&lt;-</span> <span class="fu">cv_varsel</span>(m3varsel,</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>                       <span class="at">validate_search =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>                       <span class="at">method =</span> <span class="st">"forward"</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>                       <span class="at">ncluster_pred =</span> <span class="dv">20</span>,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>                       <span class="at">nterms_max =</span> <span class="dv">20</span>,</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>                       <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cvvs_imp1, <span class="at">stats =</span> <span class="st">"mlpd"</span>, <span class="at">ranking_ntrems_max =</span> <span class="cn">NA</span>)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">anova</span>(akermodellen1))</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>val_aker_anov <span class="ot">&lt;-</span> <span class="fu">processMI</span>(akermodellen, <span class="st">'anova'</span>)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>val_aker <span class="ot">&lt;-</span> <span class="fu">validate</span>(akermodellenAlle, <span class="at">B=</span><span class="dv">150</span>, <span class="at">bw=</span><span class="cn">TRUE</span>, <span class="at">rule =</span> <span class="st">'p'</span>, <span class="at">sls =</span> <span class="fl">0.1</span>, <span class="at">type =</span> <span class="st">'individual'</span>)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>cvvs_imp1 <span class="ot">&lt;-</span> <span class="fu">cv_varsel</span>(m3varsel,</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>                       <span class="at">cv_method =</span> <span class="st">"kfold"</span>,</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>                       <span class="at">method =</span><span class="st">"forward"</span>,</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>                       <span class="at">k=</span><span class="dv">10</span>,</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>                       <span class="at">ncluster_pred =</span> <span class="dv">20</span>,</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>                       <span class="at">nterms_max =</span> <span class="dv">9</span>,</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>                       <span class="at">parallel =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>                       <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cvvs_imp1, <span class="at">stats =</span> <span class="st">"mlpd"</span>, <span class="at">deltas  =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="fu">suggest_size</span>(cvvs_imp1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <a href="https://darrendahly.github.io/post/homr">Evaluating a logistic regression based prediction tool in R</a> by Darren Dahly was used with minor modifications of the calibration plots.</p>
+<p>The resources at <a href="https://mskcc-epi-bio.github.io/decisioncurveanalysis/dca-tutorial.html">Decission Curve Analyses</a> was used as a guideline for our net reduction analyses.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dcurves)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"imp8dca"</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>oslo <span class="ot">&lt;-</span> <span class="fu">dca</span>(pN <span class="sc">~</span> predprob <span class="sc">+</span> bri2019 <span class="sc">+</span> bri2019recal <span class="sc">+</span> bri2019refit, <span class="at">data =</span> imp8dca,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="fl">0.4</span>, <span class="fl">0.01</span>),</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">list</span>(<span class="at">predprob =</span> <span class="st">"Oslo model"</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">bri2019 =</span> <span class="st">"Briganti 2019"</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>                 <span class="at">bri2019recal =</span> <span class="st">"Briganti 2019 recalibrated"</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                 <span class="at">bri2019refit =</span> <span class="st">"Briganti 2019 refited"</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">net_intervention_avoided</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="at">smooth =</span> <span class="cn">TRUE</span>, <span class="at">show_ggplot_code =</span> <span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.05</span>, <span class="fl">0.4</span>))<span class="sc">+</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">16</span>))</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplotly</span>(oslo)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>htmltools<span class="sc">::</span><span class="fu">includeHTML</span>(<span class="st">"Oslo_dca_figure.html"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>MSKCC</p>
+<iframe src="Oslo_dca_figure.html" width="100%" height="300">
+</iframe>
+<p>Briganti 2012</p>
+<p>Briganti 2019</p>
 
 
 </section>
