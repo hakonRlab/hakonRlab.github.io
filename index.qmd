@@ -82,13 +82,27 @@ plot(cvvs_imp1, stats = "mlpd", deltas  = TRUE)
 suggest_size(cvvs_imp1)
 ```
 
-The [Evaluating a logistic regression based prediction tool in R](https://darrendahly.github.io/post/homr) by Darren Dahly was used with minor modifications of the calibration plots.
+The [Evaluating a logistic regression based prediction tool in R](https://darrendahly.github.io/post/homr) by Darren Dahly was used with minor modifications of the distribution plot.
 
 ```{r, eval=FALSE}
-
+       
+    g2 <- ggplot(caldata, aes(x = pred_var, fill = alive)) +
+      geom_histogram(aes(fill = alive), bins = 200) +
+      geom_text(aes(x=.5, y=8,label="pN1", color = "red")) +
+       geom_text(aes(x=.3, y=8,label="pN0", color = "blue")) +
+      scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1)) +
+      xlab("Predicted Probability") +
+      ylab("count") +
+      theme_minimal() +
+      scale_y_continuous(breaks = c(0,5,10)) +
+      theme(panel.grid.minor = element_blank(), legend.position = "none")
 ```
 
-The resources at [Decission Curve Analyses](https://mskcc-epi-bio.github.io/decisioncurveanalysis/dca-tutorial.html) was used as a guideline for our net reduction analyses.
+<iframe src="CalplotDist_figf.html" width="100%" height="300">
+
+</iframe>
+
+The resources at [Decission Curve Analyses](https://mskcc-epi-bio.github.io/decisioncurveanalysis/dca-tutorial.html) was used as a guideline for the net reduction plot.
 
 ```{r, eval=FALSE}
 library(dcurves)
@@ -108,14 +122,13 @@ oslo <- dca(pN ~ predprob + bri2019 + bri2019recal + bri2019refit, data = imp8dc
   ggplot2::theme(text = element_text(size=16))
  
 ggplotly(oslo)
-htmltools::includeHTML("Oslo_dca_figure.html")
 ```
 
-MSKCC
-
-<iframe src="Oslo_dca_figure.html" width="100%" height="300">
+<iframe src="Oslo_dca_figure.html" width="100%" height="400">
 
 </iframe>
+
+MSKCC
 
 ```{r}
 

@@ -1,0 +1,72 @@
+
+require(tidyverse)
+    require(viridis)
+    require(gridExtra)
+
+x <- imp8dca$pN
+y <- imp8dca$predprob
+x_name <- "alive"
+y_name <- "pred_var"
+
+
+x <- as.factor(x)
+
+caldata <- data.frame(x,y)
+names(caldata) <- c(x_name,y_name)
+
+
+
+ The calibration plot        
+    g1 <- mutate(caldata, bin = ntile(pred_var, 10)) %>% 
+          # Bin prediction into 10ths
+      group_by(bin) %>%
+      mutate(n = n(), # Get ests and CIs
+             bin_pred = mean(pred_var), 
+             bin_prob = mean(as.numeric(alive) - 1), 
+             se = sqrt((bin_prob * (1 - bin_prob)) / n), 
+             ul = bin_prob + 1.96 * se, 
+             ll = bin_prob - 1.96 * se) %>%
+      ungroup() %>%
+    ggplot(aes(x = bin_pred, y = bin_prob, ymin = ll, ymax = ul)) +
+      geom_pointrange(size = 0.5, color = "black") +
+      scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1)) +
+      scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1)) +
+      geom_abline() + # 45 degree line indicating perfect calibration
+      geom_smooth(aes(x = pred_var, y = as.numeric(alive) - 1),
+        method = "lm", se = FALSE, linetype = "dashed", 
+                  color = "black", formula = y~-1 + x) + 
+                  # straight line fit through estimates
+      geom_smooth(aes(x = pred_var, y = as.numeric(alive) - 1), 
+                  color = "red", se = TRUE, method = "loess") + 
+                  # loess fit through estimates
+      xlab("") +
+      ylab("Observed Probability") +
+      theme_minimal() +
+      ggtitle("Calibration plot of the Oslo model")
+
+# The distribution plot        
+    g2 <- ggplot(caldata, aes(x = pred_var, fill = alive)) +
+      geom_histogram(aes(fill = alive), bins = 200) +
+      #geom_density(aes(y = ..scaled..))+
+       #geom_density(aes(color = pNstatus, fill = pNstatus), alpha = 0.4) +
+      #geom_histogram( aes(x = after_stat(count(pNstatus == 0)), y = after_stat(density))) +
+  geom_text(aes(x=.5, y=15,label="pN1", color = "red")) +
+       geom_text(aes(x=.3, y=15,label="pN0", color = "blue")) +
+   #   geom_histogram( aes(x = pNstatus == 1, y = after_stat(-density)), bins = 200 ) +
+ #geom_label( aes(label="variable1"), color="#69b3a2") +
+      #geom_textdensity(aes(label = pNstatus), 
+       #             text_only = TRUE) + 
+      scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1)) +
+      xlab("Predicted Probability") +
+      ylab("count") +
+      theme_minimal() +
+      scale_y_continuous(breaks = c(0,10,20)) +
+      theme(panel.grid.minor = element_blank(), legend.position = "none")
+    
+
+    
+# Combine them    
+    g <- arrangeGrob(g1, g2, respect = TRUE, heights = c(1, 0.25), ncol = 1)
+    grid.newpage()
+    grid.draw(g)
+    return(g[[3]])
