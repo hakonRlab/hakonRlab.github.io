@@ -113,9 +113,12 @@ htmltools::includeHTML("Oslo_dca_figure.html")
 
 MSKCC
 
+<iframe src="Oslo_dca_figure.html">
+
+</iframe>
+
 ```{r}
-library(htmltools)
-htmltools::includeHTML("Oslo_dca_figure.html")
+
 ```
 
 Briganti 2012
