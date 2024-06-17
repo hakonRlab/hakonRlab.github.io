@@ -90,7 +90,7 @@ The [Evaluating a logistic regression based prediction tool in R](https://darren
 
 The resources at [Decission Curve Analyses](https://mskcc-epi-bio.github.io/decisioncurveanalysis/dca-tutorial.html) was used as a guideline for our net reduction analyses.
 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 library(dcurves)
 library(plotly)
 library(ggplot2)
@@ -108,13 +108,14 @@ oslo <- dca(pN ~ predprob + bri2019 + bri2019recal + bri2019refit, data = imp8dc
   ggplot2::theme(text = element_text(size=16))
  
 ggplotly(oslo)
-
+htmltools::includeHTML("Oslo_dca_figure.html")
 ```
 
 MSKCC
 
-```{r, eval=FALSE}
-
+```{r}
+library(htmltools)
+htmltools::includeHTML("Oslo_dca_figure.html")
 ```
 
 Briganti 2012
