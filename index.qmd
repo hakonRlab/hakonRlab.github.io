@@ -132,7 +132,7 @@ The scripts bellow are the ones used to calculate the predictied probalitities o
 
 [MSKCC nomogram](https://www.mskcc.org/nomograms/prostate/pre_op/coefficients)
 
-```{r}
+```{r, eval=FALSE}
 #Knot values last updated June 2 2022
 
 knot1 <- 0.2 #PSAPreopKnot1
