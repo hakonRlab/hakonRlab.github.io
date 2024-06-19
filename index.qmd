@@ -1,5 +1,5 @@
 ---
-title: "hakonRlab.github.io"
+title: "The Oslo model"
 ---
 
 ### **The Oslo model**
@@ -128,20 +128,142 @@ ggplotly(oslo)
 
 </iframe>
 
-MSKCC
+The scripts bellow are the ones used to calculate the predictied probalitities o f the OUH cohort when evaluating the MSKCC, Briganti 2012 and Briganti 2019 models
+
+[MSKCC nomogram](https://www.mskcc.org/nomograms/prostate/pre_op/coefficients)
 
 ```{r}
+#Knot values last updated June 2 2022
 
+knot1 <- 0.2 #PSAPreopKnot1
+knot2 <- 4.78 #PSAPreopKnot2
+knot3 <- 7.3 #PSAPreopKnot3
+knot4 <- 307 #PSAPreopKnot3
+
+
+
+MSKCCcohort1$PSAsp1var <- ""
+MSKCCcohort1$PSAsp1var <- as.numeric(MSKCCcohort1$PSAsp1var)
+for (i in 1:nrow(MSKCCcohort1)){
+  MSKCCcohort1[i, "PSAsp1var"] <- max(MSKCCcohort1[i, "PSAutredn"] - knot1,0)^3 - max(MSKCCcohort1[i, "PSAutredn"
+                                            ] - knot3, 0)^3 * ((knot4 - knot1)/(knot4 - knot3))+
+                                max(MSKCCcohort1[i, "PSAutredn"] - knot4, 0)^3 *((knot3 -knot1)/(knot4 - knot3))
+}
+
+MSKCCcohort1$PSAsp2var <- ""
+MSKCCcohort1$PSAsp2var <- as.numeric(MSKCCcohort1$PSAsp2var)
+for (i in 1:nrow(MSKCCcohort1)){
+  MSKCCcohort1[i, "PSAsp2var"] <- max(MSKCCcohort1[i, "PSAutredn"] - knot2,0)^3 - max(MSKCCcohort1[i, "PSAutredn"
+                                            ] - knot3, 0)^3 * ((knot4 - knot2)/(knot4 - knot3))+
+                                max(MSKCCcohort1[i, "PSAutredn"] - knot4, 0)^3 *((knot3 -knot2)/(knot4 - knot3))
+}
+
+#last updated June 2 2022
+InterceptMSKCC <- -6.6003
+Age <- 0.0112
+PSA <- 0.2979
+PSAspline1 <- -0.0023
+PSAspline2 <- 0.0066
+BioGGG2 <- 1.4359
+BioGGG3 <- 2.4241
+BioGGG4 <- 2.6256
+BioGGG5 <- 3.4143
+cT2A <- 0.3373
+cT2B <- 0.6880
+cT2C <- 1.1680
+cT3 <- 1.2380
+
+MSKCCcohort1$MSKCCprob <- ""
+MSKCCcohort1$MSKCCprob <- as.numeric(MSKCCcohort1$MSKCCprob)
+
+for (i in 1:nrow(MSKCCcohort1)){  
+  MSKCCcohort1[i, "MSKCCprob"] <- InterceptMSKCC + Age*MSKCCcohort1[i, "Alder"] + PSA*MSKCCcohort1[i, "PSAutredn"] + PSAspline1*MSKCCcohort1[i, "PSAsp1var"] + PSAspline2*MSKCCcohort1[i, "PSAsp2var"] + BioGGG2*MSKCCcohort1[i, "ISUP2"] + BioGGG3*MSKCCcohort1[i, "ISUP3"] + BioGGG4*MSKCCcohort1[i, "ISUP4"] + BioGGG5*MSKCCcohort1[i, "ISUP5"] + cT2A*MSKCCcohort1[i, "cT2a"] + cT2B*MSKCCcohort1[i, "cT2b"] + cT2C*MSKCCcohort1[i, "cT2c"] + cT3*MSKCCcohort1[i, "cT3"] 
+ 
+}
+
+MSKCCcohort1$MSKCCprobpred <- ""
+MSKCCcohort1$MSKCCprobpred <- as.numeric(MSKCCcohort1$MSKCCprobpred)
+
+for (i in 1:nrow(MSKCCcohort1)){
+  MSKCCcohort1[i, "MSKCCprobpred"] <-  exp(MSKCCcohort1[i,"MSKCCprob"]) / (1 + exp(MSKCCcohort1[i,"MSKCCprob"])) 
+}
 ```
 
-Briganti 2012
+Briganti 2012 ([link to reference](https://www.sciencedirect.com/science/article/abs/pii/S1078143920301526?via%3Dihub))
 
 ```{r, eval=FALSE}
 
+InterceptBriganti = -4.5974
+PSABriganti = 0.0416
+ECE = 1.2214
+SVI = 1.4672
+mmdiam = 0.0311
+BriGG3 = 1.2032
+BriGG4 = 1.8063
+Corepos = 0.0119
+
+briganti2019$Brigantiprob <- ""
+briganti2019$Brigantiprob <- as.numeric(briganti2019$Brigantiprob)
+
+for (i in 1:nrow(briganti2019)){  
+  briganti2019[i, "Brigantiprob"] <- InterceptBriganti  + PSABriganti*briganti2019[i, "PSAutredn"]  + ECE*briganti2019[i, "mr_ECE"] + SVI*briganti2019[i, "mr_SVI"] + mmdiam*briganti2019[i, "MRindexTumorL1"] + BriGG3*briganti2019[i, "ISUP3"] + BriGG4*briganti2019[i, "ISUP4"] + Corepos*briganti2019[i, "PercPosCores"] 
+ 
+}
+
+briganti2019$Brigantiprobpred <- ""
+briganti2019$Brigantiprobpred <- as.numeric(briganti2019$Brigantiprobpred)
+
+for (i in 1:nrow(briganti2019)){
+  briganti2019[i, "Brigantiprobpred"] <-  exp(briganti2019[i,"Brigantiprob"]) / (1 + exp(briganti2019[i,"Brigantiprob"])) 
+}
+
+
+##############
+
+# coefs_recal
+InterceptBriganti = -4.231
+PSABriganti = 0.030 
+ECE = 0.900
+SVI = 1.081
+mmdiam = 0.0229 
+BriGG3 = 0.886 
+BriGG4 = 1.331 
+Corepos = 0.010
+
+# coefs_refit
+InterceptBriganti = -3.542
+PSABriganti = 0.007 
+ECE = 0.927
+SVI = 2.203
+mmdiam = 0.017 
+BriGG3 = 0.239
+BriGG4 = 0.691 
+Corepos = 0.010
 ```
 
-Briganti 2019
+Briganti 2019 ([link to reference](https://www.sciencedirect.com/science/article/abs/pii/S030228381830753X?via%3Dihub))
 
 ```{r, eval=FALSE}
+InterceptBriganti = -5.3234
+PSABriganti = 0.0361
+bricT2 = 0.5874
+bricT3 = 1.9940
+primgleason = 1.2954 
+sekgleason = 0.3722
+Corepos = 0.0269
 
+briganti2012$Brigantiprob <- ""
+briganti2012$Brigantiprob <- as.numeric(briganti2012$Brigantiprob)
+
+for (i in 1:nrow(briganti2012)){  
+ briganti2012[i, "Brigantiprob"] <- InterceptBriganti  + PSABriganti*briganti2012[i, "PSAutredn"]  + bricT2*briganti2012[i, "bricT2"] + bricT3*briganti2012[i, "bricT3"] + primgleason*briganti2012[i, "primgleason"] + sekgleason*briganti2012[i, "sekgleason"] + Corepos*briganti2012[i, "PercPosCores"] 
+ 
+}
+
+briganti2012$Brigantiprobpred <- ""
+briganti2012$Brigantiprobpred <- as.numeric(briganti2012$Brigantiprobpred)
+
+for (i in 1:nrow(briganti2012)){
+  briganti2012[i, "Brigantiprobpred"] <-  exp(briganti2012[i,"Brigantiprob"]) / (1 + exp(briganti2012[i,"Brigantiprob"])) 
+}
 ```
