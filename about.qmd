@@ -1,9 +1,9 @@
 ---
-title: "About"
+title: "The Oslo model"
 ---
 
 About this site
 
 ```{r}
-1 + 1
+
 ```

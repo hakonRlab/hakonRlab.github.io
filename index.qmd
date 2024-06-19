@@ -1,5 +1,5 @@
 ---
-title: "hakonrlab.github.io"
+title: "The Oslo model"
 ---
 
 ### **The Oslo model**
@@ -192,6 +192,33 @@ for (i in 1:nrow(MSKCCcohort1)){
 Briganti 2012 ([link to reference](https://www.sciencedirect.com/science/article/abs/pii/S1078143920301526?via%3Dihub))
 
 ```{r, eval=FALSE}
+InterceptBriganti = -5.3234
+PSABriganti = 0.0361
+bricT2 = 0.5874
+bricT3 = 1.9940
+primgleason = 1.2954 
+sekgleason = 0.3722
+Corepos = 0.0269
+
+briganti2012$Brigantiprob <- ""
+briganti2012$Brigantiprob <- as.numeric(briganti2012$Brigantiprob)
+
+for (i in 1:nrow(briganti2012)){  
+ briganti2012[i, "Brigantiprob"] <- InterceptBriganti  + PSABriganti*briganti2012[i, "PSAutredn"]  + bricT2*briganti2012[i, "bricT2"] + bricT3*briganti2012[i, "bricT3"] + primgleason*briganti2012[i, "primgleason"] + sekgleason*briganti2012[i, "sekgleason"] + Corepos*briganti2012[i, "PercPosCores"] 
+ 
+}
+
+briganti2012$Brigantiprobpred <- ""
+briganti2012$Brigantiprobpred <- as.numeric(briganti2012$Brigantiprobpred)
+
+for (i in 1:nrow(briganti2012)){
+  briganti2012[i, "Brigantiprobpred"] <-  exp(briganti2012[i,"Brigantiprob"]) / (1 + exp(briganti2012[i,"Brigantiprob"])) 
+}
+```
+
+Briganti 2019 ([link to reference](https://www.sciencedirect.com/science/article/abs/pii/S030228381830753X?via%3Dihub))
+
+```{r, eval=FALSE}
 
 InterceptBriganti = -4.5974
 PSABriganti = 0.0416
@@ -243,27 +270,3 @@ Corepos = 0.010
 
 Briganti 2019 ([link to reference](https://www.sciencedirect.com/science/article/abs/pii/S030228381830753X?via%3Dihub))
 
-```{r, eval=FALSE}
-InterceptBriganti = -5.3234
-PSABriganti = 0.0361
-bricT2 = 0.5874
-bricT3 = 1.9940
-primgleason = 1.2954 
-sekgleason = 0.3722
-Corepos = 0.0269
-
-briganti2012$Brigantiprob <- ""
-briganti2012$Brigantiprob <- as.numeric(briganti2012$Brigantiprob)
-
-for (i in 1:nrow(briganti2012)){  
- briganti2012[i, "Brigantiprob"] <- InterceptBriganti  + PSABriganti*briganti2012[i, "PSAutredn"]  + bricT2*briganti2012[i, "bricT2"] + bricT3*briganti2012[i, "bricT3"] + primgleason*briganti2012[i, "primgleason"] + sekgleason*briganti2012[i, "sekgleason"] + Corepos*briganti2012[i, "PercPosCores"] 
- 
-}
-
-briganti2012$Brigantiprobpred <- ""
-briganti2012$Brigantiprobpred <- as.numeric(briganti2012$Brigantiprobpred)
-
-for (i in 1:nrow(briganti2012)){
-  briganti2012[i, "Brigantiprobpred"] <-  exp(briganti2012[i,"Brigantiprob"]) / (1 + exp(briganti2012[i,"Brigantiprob"])) 
-}
-```
