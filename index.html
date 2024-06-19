@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>hakonRlab.github.io</title>
+<title>hakonRlab.github.io - hakonrlab.github.io</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -155,7 +155,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">hakonRlab.github.io</h1>
+<h1 class="title">hakonrlab.github.io</h1>
 </div>
 
 
@@ -279,9 +279,138 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <iframe src="Oslo_dca_figure.html" width="100%" height="400">
 </iframe>
-<p>MSKCC</p>
-<p>Briganti 2012</p>
-<p>Briganti 2019</p>
+<p>The scripts bellow are the ones used to calculate the predictied probalitities o f the OUH cohort when evaluating the MSKCC, Briganti 2012 and Briganti 2019 models</p>
+<p><a href="https://www.mskcc.org/nomograms/prostate/pre_op/coefficients">MSKCC nomogram</a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Knot values last updated June 2 2022</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>knot1 <span class="ot">&lt;-</span> <span class="fl">0.2</span> <span class="co">#PSAPreopKnot1</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>knot2 <span class="ot">&lt;-</span> <span class="fl">4.78</span> <span class="co">#PSAPreopKnot2</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>knot3 <span class="ot">&lt;-</span> <span class="fl">7.3</span> <span class="co">#PSAPreopKnot3</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>knot4 <span class="ot">&lt;-</span> <span class="dv">307</span> <span class="co">#PSAPreopKnot3</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>PSAsp1var <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>PSAsp1var <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(MSKCCcohort1<span class="sc">$</span>PSAsp1var)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(MSKCCcohort1)){</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  MSKCCcohort1[i, <span class="st">"PSAsp1var"</span>] <span class="ot">&lt;-</span> <span class="fu">max</span>(MSKCCcohort1[i, <span class="st">"PSAutredn"</span>] <span class="sc">-</span> knot1,<span class="dv">0</span>)<span class="sc">^</span><span class="dv">3</span> <span class="sc">-</span> <span class="fu">max</span>(MSKCCcohort1[i, <span class="st">"PSAutredn"</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>                                            ] <span class="sc">-</span> knot3, <span class="dv">0</span>)<span class="sc">^</span><span class="dv">3</span> <span class="sc">*</span> ((knot4 <span class="sc">-</span> knot1)<span class="sc">/</span>(knot4 <span class="sc">-</span> knot3))<span class="sc">+</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">max</span>(MSKCCcohort1[i, <span class="st">"PSAutredn"</span>] <span class="sc">-</span> knot4, <span class="dv">0</span>)<span class="sc">^</span><span class="dv">3</span> <span class="sc">*</span>((knot3 <span class="sc">-</span>knot1)<span class="sc">/</span>(knot4 <span class="sc">-</span> knot3))</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>PSAsp2var <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>PSAsp2var <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(MSKCCcohort1<span class="sc">$</span>PSAsp2var)</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(MSKCCcohort1)){</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  MSKCCcohort1[i, <span class="st">"PSAsp2var"</span>] <span class="ot">&lt;-</span> <span class="fu">max</span>(MSKCCcohort1[i, <span class="st">"PSAutredn"</span>] <span class="sc">-</span> knot2,<span class="dv">0</span>)<span class="sc">^</span><span class="dv">3</span> <span class="sc">-</span> <span class="fu">max</span>(MSKCCcohort1[i, <span class="st">"PSAutredn"</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>                                            ] <span class="sc">-</span> knot3, <span class="dv">0</span>)<span class="sc">^</span><span class="dv">3</span> <span class="sc">*</span> ((knot4 <span class="sc">-</span> knot2)<span class="sc">/</span>(knot4 <span class="sc">-</span> knot3))<span class="sc">+</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">max</span>(MSKCCcohort1[i, <span class="st">"PSAutredn"</span>] <span class="sc">-</span> knot4, <span class="dv">0</span>)<span class="sc">^</span><span class="dv">3</span> <span class="sc">*</span>((knot3 <span class="sc">-</span>knot2)<span class="sc">/</span>(knot4 <span class="sc">-</span> knot3))</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="co">#last updated June 2 2022</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>InterceptMSKCC <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">6.6003</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>Age <span class="ot">&lt;-</span> <span class="fl">0.0112</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>PSA <span class="ot">&lt;-</span> <span class="fl">0.2979</span></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>PSAspline1 <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.0023</span></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>PSAspline2 <span class="ot">&lt;-</span> <span class="fl">0.0066</span></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>BioGGG2 <span class="ot">&lt;-</span> <span class="fl">1.4359</span></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>BioGGG3 <span class="ot">&lt;-</span> <span class="fl">2.4241</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>BioGGG4 <span class="ot">&lt;-</span> <span class="fl">2.6256</span></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>BioGGG5 <span class="ot">&lt;-</span> <span class="fl">3.4143</span></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>cT2A <span class="ot">&lt;-</span> <span class="fl">0.3373</span></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>cT2B <span class="ot">&lt;-</span> <span class="fl">0.6880</span></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>cT2C <span class="ot">&lt;-</span> <span class="fl">1.1680</span></span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>cT3 <span class="ot">&lt;-</span> <span class="fl">1.2380</span></span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>MSKCCprob <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>MSKCCprob <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(MSKCCcohort1<span class="sc">$</span>MSKCCprob)</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(MSKCCcohort1)){  </span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>  MSKCCcohort1[i, <span class="st">"MSKCCprob"</span>] <span class="ot">&lt;-</span> InterceptMSKCC <span class="sc">+</span> Age<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"Alder"</span>] <span class="sc">+</span> PSA<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"PSAutredn"</span>] <span class="sc">+</span> PSAspline1<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"PSAsp1var"</span>] <span class="sc">+</span> PSAspline2<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"PSAsp2var"</span>] <span class="sc">+</span> BioGGG2<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"ISUP2"</span>] <span class="sc">+</span> BioGGG3<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"ISUP3"</span>] <span class="sc">+</span> BioGGG4<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"ISUP4"</span>] <span class="sc">+</span> BioGGG5<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"ISUP5"</span>] <span class="sc">+</span> cT2A<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"cT2a"</span>] <span class="sc">+</span> cT2B<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"cT2b"</span>] <span class="sc">+</span> cT2C<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"cT2c"</span>] <span class="sc">+</span> cT3<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"cT3"</span>] </span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>MSKCCprobpred <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>MSKCCprobpred <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(MSKCCcohort1<span class="sc">$</span>MSKCCprobpred)</span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(MSKCCcohort1)){</span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>  MSKCCcohort1[i, <span class="st">"MSKCCprobpred"</span>] <span class="ot">&lt;-</span>  <span class="fu">exp</span>(MSKCCcohort1[i,<span class="st">"MSKCCprob"</span>]) <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(MSKCCcohort1[i,<span class="st">"MSKCCprob"</span>])) </span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Briganti 2012 (<a href="https://www.sciencedirect.com/science/article/abs/pii/S1078143920301526?via%3Dihub">link to reference</a>)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>InterceptBriganti <span class="ot">=</span> <span class="sc">-</span><span class="fl">4.5974</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>PSABriganti <span class="ot">=</span> <span class="fl">0.0416</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>ECE <span class="ot">=</span> <span class="fl">1.2214</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>SVI <span class="ot">=</span> <span class="fl">1.4672</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>mmdiam <span class="ot">=</span> <span class="fl">0.0311</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>BriGG3 <span class="ot">=</span> <span class="fl">1.2032</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>BriGG4 <span class="ot">=</span> <span class="fl">1.8063</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>Corepos <span class="ot">=</span> <span class="fl">0.0119</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>briganti2019<span class="sc">$</span>Brigantiprob <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>briganti2019<span class="sc">$</span>Brigantiprob <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(briganti2019<span class="sc">$</span>Brigantiprob)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(briganti2019)){  </span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  briganti2019[i, <span class="st">"Brigantiprob"</span>] <span class="ot">&lt;-</span> InterceptBriganti  <span class="sc">+</span> PSABriganti<span class="sc">*</span>briganti2019[i, <span class="st">"PSAutredn"</span>]  <span class="sc">+</span> ECE<span class="sc">*</span>briganti2019[i, <span class="st">"mr_ECE"</span>] <span class="sc">+</span> SVI<span class="sc">*</span>briganti2019[i, <span class="st">"mr_SVI"</span>] <span class="sc">+</span> mmdiam<span class="sc">*</span>briganti2019[i, <span class="st">"MRindexTumorL1"</span>] <span class="sc">+</span> BriGG3<span class="sc">*</span>briganti2019[i, <span class="st">"ISUP3"</span>] <span class="sc">+</span> BriGG4<span class="sc">*</span>briganti2019[i, <span class="st">"ISUP4"</span>] <span class="sc">+</span> Corepos<span class="sc">*</span>briganti2019[i, <span class="st">"PercPosCores"</span>] </span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>briganti2019<span class="sc">$</span>Brigantiprobpred <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>briganti2019<span class="sc">$</span>Brigantiprobpred <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(briganti2019<span class="sc">$</span>Brigantiprobpred)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(briganti2019)){</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>  briganti2019[i, <span class="st">"Brigantiprobpred"</span>] <span class="ot">&lt;-</span>  <span class="fu">exp</span>(briganti2019[i,<span class="st">"Brigantiprob"</span>]) <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(briganti2019[i,<span class="st">"Brigantiprob"</span>])) </span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="do">##############</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co"># coefs_recal</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>InterceptBriganti <span class="ot">=</span> <span class="sc">-</span><span class="fl">4.231</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>PSABriganti <span class="ot">=</span> <span class="fl">0.030</span> </span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>ECE <span class="ot">=</span> <span class="fl">0.900</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>SVI <span class="ot">=</span> <span class="fl">1.081</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>mmdiam <span class="ot">=</span> <span class="fl">0.0229</span> </span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>BriGG3 <span class="ot">=</span> <span class="fl">0.886</span> </span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>BriGG4 <span class="ot">=</span> <span class="fl">1.331</span> </span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>Corepos <span class="ot">=</span> <span class="fl">0.010</span></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a><span class="co"># coefs_refit</span></span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>InterceptBriganti <span class="ot">=</span> <span class="sc">-</span><span class="fl">3.542</span></span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>PSABriganti <span class="ot">=</span> <span class="fl">0.007</span> </span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>ECE <span class="ot">=</span> <span class="fl">0.927</span></span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>SVI <span class="ot">=</span> <span class="fl">2.203</span></span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>mmdiam <span class="ot">=</span> <span class="fl">0.017</span> </span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>BriGG3 <span class="ot">=</span> <span class="fl">0.239</span></span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>BriGG4 <span class="ot">=</span> <span class="fl">0.691</span> </span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>Corepos <span class="ot">=</span> <span class="fl">0.010</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Briganti 2019 (<a href="https://www.sciencedirect.com/science/article/abs/pii/S030228381830753X?via%3Dihub">link to reference</a>)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>InterceptBriganti <span class="ot">=</span> <span class="sc">-</span><span class="fl">5.3234</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>PSABriganti <span class="ot">=</span> <span class="fl">0.0361</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>bricT2 <span class="ot">=</span> <span class="fl">0.5874</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>bricT3 <span class="ot">=</span> <span class="fl">1.9940</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>primgleason <span class="ot">=</span> <span class="fl">1.2954</span> </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>sekgleason <span class="ot">=</span> <span class="fl">0.3722</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>Corepos <span class="ot">=</span> <span class="fl">0.0269</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>briganti2012<span class="sc">$</span>Brigantiprob <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>briganti2012<span class="sc">$</span>Brigantiprob <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(briganti2012<span class="sc">$</span>Brigantiprob)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(briganti2012)){  </span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a> briganti2012[i, <span class="st">"Brigantiprob"</span>] <span class="ot">&lt;-</span> InterceptBriganti  <span class="sc">+</span> PSABriganti<span class="sc">*</span>briganti2012[i, <span class="st">"PSAutredn"</span>]  <span class="sc">+</span> bricT2<span class="sc">*</span>briganti2012[i, <span class="st">"bricT2"</span>] <span class="sc">+</span> bricT3<span class="sc">*</span>briganti2012[i, <span class="st">"bricT3"</span>] <span class="sc">+</span> primgleason<span class="sc">*</span>briganti2012[i, <span class="st">"primgleason"</span>] <span class="sc">+</span> sekgleason<span class="sc">*</span>briganti2012[i, <span class="st">"sekgleason"</span>] <span class="sc">+</span> Corepos<span class="sc">*</span>briganti2012[i, <span class="st">"PercPosCores"</span>] </span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>briganti2012<span class="sc">$</span>Brigantiprobpred <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>briganti2012<span class="sc">$</span>Brigantiprobpred <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(briganti2012<span class="sc">$</span>Brigantiprobpred)</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(briganti2012)){</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  briganti2012[i, <span class="st">"Brigantiprobpred"</span>] <span class="ot">&lt;-</span>  <span class="fu">exp</span>(briganti2012[i,<span class="st">"Brigantiprob"</span>]) <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(briganti2012[i,<span class="st">"Brigantiprob"</span>])) </span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
 </section>
