@@ -2,8 +2,6 @@
 title: "The Oslo model"
 ---
 
-### **The Oslo model**
-
 A lymph node invasion prediction model for prostate cancer patients
 
 Sample size calculation was done using the pmsampsize package. None of the evaluated models have published the R^2^ so this was not included in our sample size calulation.
@@ -86,7 +84,7 @@ The [Evaluating a logistic regression based prediction tool in R](https://darren
 
 ```{r, eval=FALSE}
        
-    g2 <- ggplot(caldata, aes(x = pred_var, fill = alive)) +
+    g2 <- ggplot(data, aes(x = pred_var, fill = alive)) +
       geom_histogram(aes(fill = alive), bins = 200) +
       geom_text(aes(x=.5, y=8,label="pN1", color = "red")) +
        geom_text(aes(x=.3, y=8,label="pN0", color = "blue")) +
@@ -94,7 +92,7 @@ The [Evaluating a logistic regression based prediction tool in R](https://darren
       xlab("Predicted Probability") +
       ylab("count") +
       theme_minimal() +
-      scale_y_continuous(breaks = c(0,5,10)) +
+      scale_y_continuous(breaks = c(0,10,20)) +
       theme(panel.grid.minor = element_blank(), legend.position = "none")
 ```
 
@@ -108,8 +106,8 @@ The resources at [Decission Curve Analyses](https://mskcc-epi-bio.github.io/deci
 library(dcurves)
 library(plotly)
 library(ggplot2)
-load("imp8dca")
-oslo <- dca(pN ~ predprob + bri2019 + bri2019recal + bri2019refit, data = imp8dca,
+
+oslo <- dca(pN ~ predprob + bri2019 + bri2019recal + bri2019refit, data = data_pN_predprob,
     thresholds = seq(0, 0.4, 0.01),
     label = list(predprob = "Oslo model",
                  bri2019 = "Briganti 2019",
@@ -192,6 +190,13 @@ for (i in 1:nrow(MSKCCcohort1)){
 }
 
 ####
+
+```
+
+There as been a recent update of the MSKCC model
+
+```{r, eval=FALSE}
+
 #last updated December 15 2023
 
 
@@ -216,11 +221,15 @@ cT2C <- 0.9285
 cT3 <- 1.2689
 ```
 
-Briganti 2012 ([link to reference](https://www.sciencedirect.com/science/article/abs/pii/S1078143920301526?via%3Dihub))
+Calibration plot of updated MSKCC using val.prb function from the rms package
+
+![](MSKCC_calplot_valprob_DecUpdate.pdf)
+
+[Briganti 2012](https://www.sciencedirect.com/science/article/pii/S0302283811012309?via%3Dihub), and we used the coeficients from [Diamand et al](https://www.sciencedirect.com/science/article/abs/pii/S1078143920301526?via%3Dihub).
 
 ```{r, eval=FALSE}
-InterceptBriganti = -5.3234
-PSABriganti = 0.0361
+Intercept = -5.3234
+PSA = 0.0361
 bricT2 = 0.5874
 bricT3 = 1.9940
 primgleason = 1.2954 
@@ -231,7 +240,7 @@ briganti2012$Brigantiprob <- ""
 briganti2012$Brigantiprob <- as.numeric(briganti2012$Brigantiprob)
 
 for (i in 1:nrow(briganti2012)){  
- briganti2012[i, "Brigantiprob"] <- InterceptBriganti  + PSABriganti*briganti2012[i, "PSAutredn"]  + bricT2*briganti2012[i, "bricT2"] + bricT3*briganti2012[i, "bricT3"] + primgleason*briganti2012[i, "primgleason"] + sekgleason*briganti2012[i, "sekgleason"] + Corepos*briganti2012[i, "PercPosCores"] 
+ briganti2012[i, "Brigantiprob"] <- InterceptBriganti  + PSABriganti*briganti2012[i, "PSA"]  + bricT2*briganti2012[i, "bricT2"] + bricT3*briganti2012[i, "bricT3"] + primgleason*briganti2012[i, "primgleason"] + sekgleason*briganti2012[i, "sekgleason"] + Corepos*briganti2012[i, "PercPosCores"] 
  
 }
 
