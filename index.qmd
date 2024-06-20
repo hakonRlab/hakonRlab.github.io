@@ -221,11 +221,11 @@ cT2C <- 0.9285
 cT3 <- 1.2689
 ```
 
-Calibration plot of updated MSKCC using val.prb function from the rms package
+Calibration plot of updated MSKCC using val.prob function from the rms package
 
-![](MSKCC_calplot_valprob_DecUpdate.pdf)
+![](MSKCC_calplot_valprob_DecUpdate.jpg)
 
-[Briganti 2012](https://www.sciencedirect.com/science/article/pii/S0302283811012309?via%3Dihub), and we used the coeficients from [Diamand et al](https://www.sciencedirect.com/science/article/abs/pii/S1078143920301526?via%3Dihub).
+[Briganti 2012](https://www.sciencedirect.com/science/article/pii/S0302283811012309?via%3Dihub), we used the coeficients from [Diamand et al](https://www.sciencedirect.com/science/article/abs/pii/S1078143920301526?via%3Dihub).
 
 ```{r, eval=FALSE}
 Intercept = -5.3234
