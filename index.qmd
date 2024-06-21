@@ -19,8 +19,6 @@ Imputing missing values with rmsb package
 library(rmsb)
 
 set.seed(1999)         
-mi <- aregImpute(~ pN + PSAutredn + ISUP3 + ISUP4 + ISUP5 + cT2a  + cT2b + cT2c + cT3 + PIRADS4 + PIRADS5  + cT_mr3a + cT_mr3b + MRindexTumorL1 + ProstVolum + BMI,
-                 data=plndbayes_mrpNimp, n.impute=10, nk=3, pr=FALSE)
 
 mi <- aregImpute(~ pN + PSAutredn + ISUP + PIRADS345  + mr_cT + MRindexTumorL1 + ProstVolum + dre_cT + BMI + PercPosCores, data=plndbayes_mrpNimp, n.impute=10, nk=4, pr=FALSE, boot.method = 'approximate bayesian')
 ```
@@ -32,41 +30,45 @@ OslomodelFull <- stackMI(formula = pN ~ rcs(PSA,4)*rcs(ProstateVolume,4) + ISUP 
                               rcs(PercPosCores,4), fitter = blrm, xtrans = mi, data=plndbayes_mrpNimp, iter = 4000, warmup = 2000 , chain = 4, file='OslomodelFull.RDS')
 
 
-plot(anova(akermodellenAlle)) # Relative explained variation of variables
+plot(anova(OslomodelFull)) # Relative explained variation of variables
 
 OslomodelFinal <- stackMI(formula = pN ~ rcs(PSA,4)*rcs(ProstateVolume,4) + ISUP + mr_cT + rcs(MRindexTumorL1,4), fitter = blrm, xtrans = mi, data=plndbayes_mrpNimp, iter = 4000, warmup = 2000 , chain = 4, file='OslomodellenFinal.RDS')
+
+##### Expected log-predictive density eastimates
+
+loo_full <- OslomodelFull$loo
+loo_final <- OslomodelFinal$loo
+
+print(loo_compare(loo_full, loo_final))
+
+
+elpd_tab <- data.frame(
+  est = c("elpd_loo", "p_loo", "looic"),
+  all = c(loo_full$elpd_loo, loo_full$p_loo, loo_full$looic),
+  all_se = c(loo_alle$se_elpd_loo, loo_alle$se_p_loo, loo_alle$se_looic)
+)
+
+names(elpd_tab) <- c("", "Estimates", "S.E")
 ```
 
-Variable selection with the [projpred](https://mc-stan.org/projpred/index.html) package
+projection predictive feature selection using the [projpred](https://mc-stan.org/projpred/index.html) package
 
 ```{r, eval=FALSE}
 library(projpred)
 
-plot(anova(akermodellenAlle),  cex.lab = 1.2, cex.axis = 12)
+oslo_ref <- get_refmodel(OslomodelFull)
 
-plot(anova(akermodellen2),  cex.lab = 1.2, cex.axis = 12)
-
-akaerteset <- vcov(akermodellenAlle, regcoef.only = TRUE, intercepts = "all")
-
-akertest <- brms::get_refmodel.brmsfit(akermodellenAlle)
-
-
-cvvs_imp1 <- cv_varsel(m3varsel,
+cvvs_imp1 <- cv_varsel(oslo_ref,
                        validate_search = FALSE,
                        method = "forward",
                        ncluster_pred = 20,
                        nterms_max = 20,
                        verbose = FALSE)
+
 plot(cvvs_imp1, stats = "mlpd", ranking_ntrems_max = NA)
 
-plot(anova(akermodellen1))
 
-
-val_aker_anov <- processMI(akermodellen, 'anova')
-val_aker <- validate(akermodellenAlle, B=150, bw=TRUE, rule = 'p', sls = 0.1, type = 'individual')
-
-
-cvvs_imp1 <- cv_varsel(m3varsel,
+cvvs_imp2 <- cv_varsel(oslo_ref,
                        cv_method = "kfold",
                        method ="forward",
                        k=10,
@@ -75,9 +77,9 @@ cvvs_imp1 <- cv_varsel(m3varsel,
                        parallel = TRUE,
                        verbose = FALSE)
 
-plot(cvvs_imp1, stats = "mlpd", deltas  = TRUE)
+plot(cvvs_imp2, stats = "mlpd", deltas  = TRUE)
 
-suggest_size(cvvs_imp1)
+suggest_size(cvvs_imp2)
 ```
 
 The [Evaluating a logistic regression based prediction tool in R](https://darrendahly.github.io/post/homr) by Darren Dahly was used with minor modifications of the distribution plot.
@@ -144,17 +146,14 @@ knot4 <- 307 #PSAPreopKnot3
 MSKCCcohort1$PSAsp1var <- ""
 MSKCCcohort1$PSAsp1var <- as.numeric(MSKCCcohort1$PSAsp1var)
 for (i in 1:nrow(MSKCCcohort1)){
-  MSKCCcohort1[i, "PSAsp1var"] <- max(MSKCCcohort1[i, "PSAutredn"] - knot1,0)^3 - max(MSKCCcohort1[i, "PSAutredn"
-                                            ] - knot3, 0)^3 * ((knot4 - knot1)/(knot4 - knot3))+
-                                max(MSKCCcohort1[i, "PSAutredn"] - knot4, 0)^3 *((knot3 -knot1)/(knot4 - knot3))
+  MSKCCcohort1[i, "PSAsp1var"] <- max(MSKCCcohort1[i, "PSAutredn"] - knot1,0)^3 - max(MSKCCcohort1[i,   "PSAutredn"] - knot3, 0)^3 * ((knot4 - knot1)/(knot4 - knot3))+ max(MSKCCcohort1[i, "PSAutredn"] - knot4, 0)^3 *((knot3 -knot1)/(knot4 - knot3))
 }
 
 MSKCCcohort1$PSAsp2var <- ""
 MSKCCcohort1$PSAsp2var <- as.numeric(MSKCCcohort1$PSAsp2var)
-for (i in 1:nrow(MSKCCcohort1)){
-  MSKCCcohort1[i, "PSAsp2var"] <- max(MSKCCcohort1[i, "PSAutredn"] - knot2,0)^3 - max(MSKCCcohort1[i, "PSAutredn"
-                                            ] - knot3, 0)^3 * ((knot4 - knot2)/(knot4 - knot3))+
-                                max(MSKCCcohort1[i, "PSAutredn"] - knot4, 0)^3 *((knot3 -knot2)/(knot4 - knot3))
+
+for (i in 1:nrow(MSKCCcohort1)){MSKCCcohort1[i, "PSAsp2var"] <- max(MSKCCcohort1[i, "PSAutredn"] - knot2,0)^3 - max(MSKCCcohort1[i, "PSAutredn"] - knot3, 0)^3 * ((knot4 - knot2)/(knot4 - knot3))+
+max(MSKCCcohort1[i, "PSAutredn"] - knot4, 0)^3 *((knot3 -knot2)/(knot4 - knot3))
 }
 
 
@@ -178,7 +177,7 @@ MSKCCcohort1$MSKCCprob <- ""
 MSKCCcohort1$MSKCCprob <- as.numeric(MSKCCcohort1$MSKCCprob)
 
 for (i in 1:nrow(MSKCCcohort1)){  
-  MSKCCcohort1[i, "MSKCCprob"] <- InterceptMSKCC + Age*MSKCCcohort1[i, "Alder"] + PSA*MSKCCcohort1[i, "PSAutredn"] + PSAspline1*MSKCCcohort1[i, "PSAsp1var"] + PSAspline2*MSKCCcohort1[i, "PSAsp2var"] + BioGGG2*MSKCCcohort1[i, "ISUP2"] + BioGGG3*MSKCCcohort1[i, "ISUP3"] + BioGGG4*MSKCCcohort1[i, "ISUP4"] + BioGGG5*MSKCCcohort1[i, "ISUP5"] + cT2A*MSKCCcohort1[i, "cT2a"] + cT2B*MSKCCcohort1[i, "cT2b"] + cT2C*MSKCCcohort1[i, "cT2c"] + cT3*MSKCCcohort1[i, "cT3"] 
+  MSKCCcohort1[i, "MSKCCprob"] <- InterceptMSKCC + Age*MSKCCcohort1[i, "Age"] + PSA*MSKCCcohort1[i, "PSA"] + PSAspline1*MSKCCcohort1[i, "PSAsp1var"] + PSAspline2*MSKCCcohort1[i, "PSAsp2var"] + BioGGG2*MSKCCcohort1[i, "BioGGG2"] + BioGGG3*MSKCCcohort1[i, "BioGGG3"] + BioGGG4*MSKCCcohort1[i, "BioGGG4"] + BioGGG5*MSKCCcohort1[i, "BioGGG5"] + cT2A*MSKCCcohort1[i, "cT2a"] + cT2B*MSKCCcohort1[i, "cT2b"] + cT2C*MSKCCcohort1[i, "cT2c"] + cT3*MSKCCcohort1[i, "cT3"] 
  
 }
 
@@ -226,20 +225,20 @@ Briganti 2019 ([link to reference](https://www.sciencedirect.com/science/article
 
 ```{r, eval=FALSE}
 
-InterceptBriganti = -4.5974
-PSABriganti = 0.0416
+Intercept = -4.5974
+PSA = 0.0416
 ECE = 1.2214
 SVI = 1.4672
 mmdiam = 0.0311
-BriGG3 = 1.2032
-BriGG4 = 1.8063
+BioGGG3 = 1.2032
+BioGGG4 = 1.8063
 Corepos = 0.0119
 
 briganti2019$Brigantiprob <- ""
 briganti2019$Brigantiprob <- as.numeric(briganti2019$Brigantiprob)
 
 for (i in 1:nrow(briganti2019)){  
-  briganti2019[i, "Brigantiprob"] <- InterceptBriganti  + PSABriganti*briganti2019[i, "PSAutredn"]  + ECE*briganti2019[i, "mr_ECE"] + SVI*briganti2019[i, "mr_SVI"] + mmdiam*briganti2019[i, "MRindexTumorL1"] + BriGG3*briganti2019[i, "ISUP3"] + BriGG4*briganti2019[i, "ISUP4"] + Corepos*briganti2019[i, "PercPosCores"] 
+  briganti2019[i, "Brigantiprob"] <- InterceptBriganti  + PSABriganti*briganti2019[i, "PSA"]  + ECE*briganti2019[i, "ECE"] + SVI*briganti2019[i, "SVI"] + mmdiam*briganti2019[i, "mmdiam"] + BriGG3*briganti2019[i, "BioGGG4"] + BriGG4*briganti2019[i, "BioGGG5"] + Corepos*briganti2019[i, "Corepos"] 
  
 }
 
@@ -254,23 +253,23 @@ for (i in 1:nrow(briganti2019)){
 ##############
 
 # Recalibrated coeficients
-InterceptBriganti = -4.231
-PSABriganti = 0.030 
+Intercept = -4.231
+PSA = 0.030 
 ECE = 0.900
 SVI = 1.081
 mmdiam = 0.0229 
-BriGG3 = 0.886 
-BriGG4 = 1.331 
+BioGGGG3 = 0.886 
+BioGGG4 = 1.331 
 Corepos = 0.010
 
 # Coeficients after refiting the model
-InterceptBriganti = -3.542
-PSABriganti = 0.007 
+Intercept = -3.542
+PSA = 0.007 
 ECE = 0.927
 SVI = 2.203
 mmdiam = 0.017 
-BriGG3 = 0.239
-BriGG4 = 0.691 
+BioGGG3 = 0.239
+BioGGG4 = 0.691 
 Corepos = 0.010
 ```
 

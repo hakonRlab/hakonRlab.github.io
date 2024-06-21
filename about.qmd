@@ -4,6 +4,10 @@ title: "The Oslo model"
 
 Shiny App under construction
 
+The Oslo model can be downloaded as an rds file form
+
+[Oslo_model_public](https://github.com/hakonRlab/hakonRlab.github.io)
+
 ```{r}
 
 ```
