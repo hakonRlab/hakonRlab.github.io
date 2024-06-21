@@ -178,10 +178,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rmsb)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1999</span>)         </span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>mi <span class="ot">&lt;-</span> <span class="fu">aregImpute</span>(<span class="sc">~</span> pN <span class="sc">+</span> PSAutredn <span class="sc">+</span> ISUP3 <span class="sc">+</span> ISUP4 <span class="sc">+</span> ISUP5 <span class="sc">+</span> cT2a  <span class="sc">+</span> cT2b <span class="sc">+</span> cT2c <span class="sc">+</span> cT3 <span class="sc">+</span> PIRADS4 <span class="sc">+</span> PIRADS5  <span class="sc">+</span> cT_mr3a <span class="sc">+</span> cT_mr3b <span class="sc">+</span> MRindexTumorL1 <span class="sc">+</span> ProstVolum <span class="sc">+</span> BMI,</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data=</span>plndbayes_mrpNimp, <span class="at">n.impute=</span><span class="dv">10</span>, <span class="at">nk=</span><span class="dv">3</span>, <span class="at">pr=</span><span class="cn">FALSE</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>mi <span class="ot">&lt;-</span> <span class="fu">aregImpute</span>(<span class="sc">~</span> pN <span class="sc">+</span> PSAutredn <span class="sc">+</span> ISUP <span class="sc">+</span> PIRADS345  <span class="sc">+</span> mr_cT <span class="sc">+</span> MRindexTumorL1 <span class="sc">+</span> ProstVolum <span class="sc">+</span> dre_cT <span class="sc">+</span> BMI <span class="sc">+</span> PercPosCores, <span class="at">data=</span>plndbayes_mrpNimp, <span class="at">n.impute=</span><span class="dv">10</span>, <span class="at">nk=</span><span class="dv">4</span>, <span class="at">pr=</span><span class="cn">FALSE</span>, <span class="at">boot.method =</span> <span class="st">'approximate bayesian'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>mi <span class="ot">&lt;-</span> <span class="fu">aregImpute</span>(<span class="sc">~</span> pN <span class="sc">+</span> PSAutredn <span class="sc">+</span> ISUP <span class="sc">+</span> PIRADS345  <span class="sc">+</span> mr_cT <span class="sc">+</span> MRindexTumorL1 <span class="sc">+</span> ProstVolum <span class="sc">+</span> dre_cT <span class="sc">+</span> BMI <span class="sc">+</span> PercPosCores, <span class="at">data=</span>plndbayes_mrpNimp, <span class="at">n.impute=</span><span class="dv">10</span>, <span class="at">nk=</span><span class="dv">4</span>, <span class="at">pr=</span><span class="cn">FALSE</span>, <span class="at">boot.method =</span> <span class="st">'approximate bayesian'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Bayesian logistic regression model development followed many suggestions from the <a href="https://hbiostat.org/rmsc/">Regression Modeling Strategies</a> by Frank Harrell. Used the rmsb package and the imputed data sets generated in the previous code chunk.</p>
 <div class="cell">
@@ -189,50 +187,54 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                              <span class="fu">rcs</span>(PercPosCores,<span class="dv">4</span>), <span class="at">fitter =</span> blrm, <span class="at">xtrans =</span> mi, <span class="at">data=</span>plndbayes_mrpNimp, <span class="at">iter =</span> <span class="dv">4000</span>, <span class="at">warmup =</span> <span class="dv">2000</span> , <span class="at">chain =</span> <span class="dv">4</span>, <span class="at">file=</span><span class="st">'OslomodelFull.RDS'</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">anova</span>(akermodellenAlle)) <span class="co"># Relative explained variation of variables</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">anova</span>(OslomodelFull)) <span class="co"># Relative explained variation of variables</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>OslomodelFinal <span class="ot">&lt;-</span> <span class="fu">stackMI</span>(<span class="at">formula =</span> pN <span class="sc">~</span> <span class="fu">rcs</span>(PSA,<span class="dv">4</span>)<span class="sc">*</span><span class="fu">rcs</span>(ProstateVolume,<span class="dv">4</span>) <span class="sc">+</span> ISUP <span class="sc">+</span> mr_cT <span class="sc">+</span> <span class="fu">rcs</span>(MRindexTumorL1,<span class="dv">4</span>), <span class="at">fitter =</span> blrm, <span class="at">xtrans =</span> mi, <span class="at">data=</span>plndbayes_mrpNimp, <span class="at">iter =</span> <span class="dv">4000</span>, <span class="at">warmup =</span> <span class="dv">2000</span> , <span class="at">chain =</span> <span class="dv">4</span>, <span class="at">file=</span><span class="st">'OslomodellenFinal.RDS'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>OslomodelFinal <span class="ot">&lt;-</span> <span class="fu">stackMI</span>(<span class="at">formula =</span> pN <span class="sc">~</span> <span class="fu">rcs</span>(PSA,<span class="dv">4</span>)<span class="sc">*</span><span class="fu">rcs</span>(ProstateVolume,<span class="dv">4</span>) <span class="sc">+</span> ISUP <span class="sc">+</span> mr_cT <span class="sc">+</span> <span class="fu">rcs</span>(MRindexTumorL1,<span class="dv">4</span>), <span class="at">fitter =</span> blrm, <span class="at">xtrans =</span> mi, <span class="at">data=</span>plndbayes_mrpNimp, <span class="at">iter =</span> <span class="dv">4000</span>, <span class="at">warmup =</span> <span class="dv">2000</span> , <span class="at">chain =</span> <span class="dv">4</span>, <span class="at">file=</span><span class="st">'OslomodellenFinal.RDS'</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="do">##### Expected log-predictive density eastimates</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>loo_full <span class="ot">&lt;-</span> OslomodelFull<span class="sc">$</span>loo</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>loo_final <span class="ot">&lt;-</span> OslomodelFinal<span class="sc">$</span>loo</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">loo_compare</span>(loo_full, loo_final))</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>elpd_tab <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">est =</span> <span class="fu">c</span>(<span class="st">"elpd_loo"</span>, <span class="st">"p_loo"</span>, <span class="st">"looic"</span>),</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">all =</span> <span class="fu">c</span>(loo_full<span class="sc">$</span>elpd_loo, loo_full<span class="sc">$</span>p_loo, loo_full<span class="sc">$</span>looic),</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">all_se =</span> <span class="fu">c</span>(loo_alle<span class="sc">$</span>se_elpd_loo, loo_alle<span class="sc">$</span>se_p_loo, loo_alle<span class="sc">$</span>se_looic)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(elpd_tab) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">""</span>, <span class="st">"Estimates"</span>, <span class="st">"S.E"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Variable selection with the <a href="https://mc-stan.org/projpred/index.html">projpred</a> package</p>
+<p>projection predictive feature selection using the <a href="https://mc-stan.org/projpred/index.html">projpred</a> package</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(projpred)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">anova</span>(akermodellenAlle),  <span class="at">cex.lab =</span> <span class="fl">1.2</span>, <span class="at">cex.axis =</span> <span class="dv">12</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>oslo_ref <span class="ot">&lt;-</span> <span class="fu">get_refmodel</span>(OslomodelFull)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">anova</span>(akermodellen2),  <span class="at">cex.lab =</span> <span class="fl">1.2</span>, <span class="at">cex.axis =</span> <span class="dv">12</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>akaerteset <span class="ot">&lt;-</span> <span class="fu">vcov</span>(akermodellenAlle, <span class="at">regcoef.only =</span> <span class="cn">TRUE</span>, <span class="at">intercepts =</span> <span class="st">"all"</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>akertest <span class="ot">&lt;-</span> brms<span class="sc">::</span><span class="fu">get_refmodel.brmsfit</span>(akermodellenAlle)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>cvvs_imp1 <span class="ot">&lt;-</span> <span class="fu">cv_varsel</span>(oslo_ref,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                       <span class="at">validate_search =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                       <span class="at">method =</span> <span class="st">"forward"</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>                       <span class="at">ncluster_pred =</span> <span class="dv">20</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                       <span class="at">nterms_max =</span> <span class="dv">20</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                       <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>cvvs_imp1 <span class="ot">&lt;-</span> <span class="fu">cv_varsel</span>(m3varsel,</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>                       <span class="at">validate_search =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>                       <span class="at">method =</span> <span class="st">"forward"</span>,</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>                       <span class="at">ncluster_pred =</span> <span class="dv">20</span>,</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>                       <span class="at">nterms_max =</span> <span class="dv">20</span>,</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>                       <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cvvs_imp1, <span class="at">stats =</span> <span class="st">"mlpd"</span>, <span class="at">ranking_ntrems_max =</span> <span class="cn">NA</span>)</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">anova</span>(akermodellen1))</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>val_aker_anov <span class="ot">&lt;-</span> <span class="fu">processMI</span>(akermodellen, <span class="st">'anova'</span>)</span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>val_aker <span class="ot">&lt;-</span> <span class="fu">validate</span>(akermodellenAlle, <span class="at">B=</span><span class="dv">150</span>, <span class="at">bw=</span><span class="cn">TRUE</span>, <span class="at">rule =</span> <span class="st">'p'</span>, <span class="at">sls =</span> <span class="fl">0.1</span>, <span class="at">type =</span> <span class="st">'individual'</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cvvs_imp1, <span class="at">stats =</span> <span class="st">"mlpd"</span>, <span class="at">ranking_ntrems_max =</span> <span class="cn">NA</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>cvvs_imp2 <span class="ot">&lt;-</span> <span class="fu">cv_varsel</span>(oslo_ref,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>                       <span class="at">cv_method =</span> <span class="st">"kfold"</span>,</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>                       <span class="at">method =</span><span class="st">"forward"</span>,</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>                       <span class="at">k=</span><span class="dv">10</span>,</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>                       <span class="at">ncluster_pred =</span> <span class="dv">20</span>,</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>                       <span class="at">nterms_max =</span> <span class="dv">9</span>,</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>                       <span class="at">parallel =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>                       <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cvvs_imp2, <span class="at">stats =</span> <span class="st">"mlpd"</span>, <span class="at">deltas  =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>cvvs_imp1 <span class="ot">&lt;-</span> <span class="fu">cv_varsel</span>(m3varsel,</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>                       <span class="at">cv_method =</span> <span class="st">"kfold"</span>,</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>                       <span class="at">method =</span><span class="st">"forward"</span>,</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>                       <span class="at">k=</span><span class="dv">10</span>,</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>                       <span class="at">ncluster_pred =</span> <span class="dv">20</span>,</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>                       <span class="at">nterms_max =</span> <span class="dv">9</span>,</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>                       <span class="at">parallel =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>                       <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(cvvs_imp1, <span class="at">stats =</span> <span class="st">"mlpd"</span>, <span class="at">deltas  =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="fu">suggest_size</span>(cvvs_imp1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="fu">suggest_size</span>(cvvs_imp2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The <a href="https://darrendahly.github.io/post/homr">Evaluating a logistic regression based prediction tool in R</a> by Darren Dahly was used with minor modifications of the distribution plot.</p>
 <div class="cell">
@@ -287,52 +289,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>PSAsp1var <span class="ot">&lt;-</span> <span class="st">""</span></span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>PSAsp1var <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(MSKCCcohort1<span class="sc">$</span>PSAsp1var)</span>
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(MSKCCcohort1)){</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  MSKCCcohort1[i, <span class="st">"PSAsp1var"</span>] <span class="ot">&lt;-</span> <span class="fu">max</span>(MSKCCcohort1[i, <span class="st">"PSAutredn"</span>] <span class="sc">-</span> knot1,<span class="dv">0</span>)<span class="sc">^</span><span class="dv">3</span> <span class="sc">-</span> <span class="fu">max</span>(MSKCCcohort1[i, <span class="st">"PSAutredn"</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>                                            ] <span class="sc">-</span> knot3, <span class="dv">0</span>)<span class="sc">^</span><span class="dv">3</span> <span class="sc">*</span> ((knot4 <span class="sc">-</span> knot1)<span class="sc">/</span>(knot4 <span class="sc">-</span> knot3))<span class="sc">+</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">max</span>(MSKCCcohort1[i, <span class="st">"PSAutredn"</span>] <span class="sc">-</span> knot4, <span class="dv">0</span>)<span class="sc">^</span><span class="dv">3</span> <span class="sc">*</span>((knot3 <span class="sc">-</span>knot1)<span class="sc">/</span>(knot4 <span class="sc">-</span> knot3))</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>PSAsp2var <span class="ot">&lt;-</span> <span class="st">""</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>PSAsp2var <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(MSKCCcohort1<span class="sc">$</span>PSAsp2var)</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(MSKCCcohort1)){</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  MSKCCcohort1[i, <span class="st">"PSAsp2var"</span>] <span class="ot">&lt;-</span> <span class="fu">max</span>(MSKCCcohort1[i, <span class="st">"PSAutredn"</span>] <span class="sc">-</span> knot2,<span class="dv">0</span>)<span class="sc">^</span><span class="dv">3</span> <span class="sc">-</span> <span class="fu">max</span>(MSKCCcohort1[i, <span class="st">"PSAutredn"</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>                                            ] <span class="sc">-</span> knot3, <span class="dv">0</span>)<span class="sc">^</span><span class="dv">3</span> <span class="sc">*</span> ((knot4 <span class="sc">-</span> knot2)<span class="sc">/</span>(knot4 <span class="sc">-</span> knot3))<span class="sc">+</span></span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">max</span>(MSKCCcohort1[i, <span class="st">"PSAutredn"</span>] <span class="sc">-</span> knot4, <span class="dv">0</span>)<span class="sc">^</span><span class="dv">3</span> <span class="sc">*</span>((knot3 <span class="sc">-</span>knot2)<span class="sc">/</span>(knot4 <span class="sc">-</span> knot3))</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a><span class="co">#last updated June 2 2022</span></span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>InterceptMSKCC <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">6.6003</span></span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>Age <span class="ot">&lt;-</span> <span class="fl">0.0112</span></span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>PSA <span class="ot">&lt;-</span> <span class="fl">0.2979</span></span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>PSAspline1 <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.0023</span></span>
-<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>PSAspline2 <span class="ot">&lt;-</span> <span class="fl">0.0066</span></span>
-<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>BioGGG2 <span class="ot">&lt;-</span> <span class="fl">1.4359</span></span>
-<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>BioGGG3 <span class="ot">&lt;-</span> <span class="fl">2.4241</span></span>
-<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>BioGGG4 <span class="ot">&lt;-</span> <span class="fl">2.6256</span></span>
-<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>BioGGG5 <span class="ot">&lt;-</span> <span class="fl">3.4143</span></span>
-<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>cT2A <span class="ot">&lt;-</span> <span class="fl">0.3373</span></span>
-<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>cT2B <span class="ot">&lt;-</span> <span class="fl">0.6880</span></span>
-<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>cT2C <span class="ot">&lt;-</span> <span class="fl">1.1680</span></span>
-<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>cT3 <span class="ot">&lt;-</span> <span class="fl">1.2380</span></span>
-<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  MSKCCcohort1[i, <span class="st">"PSAsp1var"</span>] <span class="ot">&lt;-</span> <span class="fu">max</span>(MSKCCcohort1[i, <span class="st">"PSAutredn"</span>] <span class="sc">-</span> knot1,<span class="dv">0</span>)<span class="sc">^</span><span class="dv">3</span> <span class="sc">-</span> <span class="fu">max</span>(MSKCCcohort1[i,   <span class="st">"PSAutredn"</span>] <span class="sc">-</span> knot3, <span class="dv">0</span>)<span class="sc">^</span><span class="dv">3</span> <span class="sc">*</span> ((knot4 <span class="sc">-</span> knot1)<span class="sc">/</span>(knot4 <span class="sc">-</span> knot3))<span class="sc">+</span> <span class="fu">max</span>(MSKCCcohort1[i, <span class="st">"PSAutredn"</span>] <span class="sc">-</span> knot4, <span class="dv">0</span>)<span class="sc">^</span><span class="dv">3</span> <span class="sc">*</span>((knot3 <span class="sc">-</span>knot1)<span class="sc">/</span>(knot4 <span class="sc">-</span> knot3))</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>PSAsp2var <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>PSAsp2var <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(MSKCCcohort1<span class="sc">$</span>PSAsp2var)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(MSKCCcohort1)){MSKCCcohort1[i, <span class="st">"PSAsp2var"</span>] <span class="ot">&lt;-</span> <span class="fu">max</span>(MSKCCcohort1[i, <span class="st">"PSAutredn"</span>] <span class="sc">-</span> knot2,<span class="dv">0</span>)<span class="sc">^</span><span class="dv">3</span> <span class="sc">-</span> <span class="fu">max</span>(MSKCCcohort1[i, <span class="st">"PSAutredn"</span>] <span class="sc">-</span> knot3, <span class="dv">0</span>)<span class="sc">^</span><span class="dv">3</span> <span class="sc">*</span> ((knot4 <span class="sc">-</span> knot2)<span class="sc">/</span>(knot4 <span class="sc">-</span> knot3))<span class="sc">+</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(MSKCCcohort1[i, <span class="st">"PSAutredn"</span>] <span class="sc">-</span> knot4, <span class="dv">0</span>)<span class="sc">^</span><span class="dv">3</span> <span class="sc">*</span>((knot3 <span class="sc">-</span>knot2)<span class="sc">/</span>(knot4 <span class="sc">-</span> knot3))</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="co">#last updated June 2 2022</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>InterceptMSKCC <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">6.6003</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>Age <span class="ot">&lt;-</span> <span class="fl">0.0112</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>PSA <span class="ot">&lt;-</span> <span class="fl">0.2979</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>PSAspline1 <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">0.0023</span></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>PSAspline2 <span class="ot">&lt;-</span> <span class="fl">0.0066</span></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>BioGGG2 <span class="ot">&lt;-</span> <span class="fl">1.4359</span></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>BioGGG3 <span class="ot">&lt;-</span> <span class="fl">2.4241</span></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>BioGGG4 <span class="ot">&lt;-</span> <span class="fl">2.6256</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>BioGGG5 <span class="ot">&lt;-</span> <span class="fl">3.4143</span></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>cT2A <span class="ot">&lt;-</span> <span class="fl">0.3373</span></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>cT2B <span class="ot">&lt;-</span> <span class="fl">0.6880</span></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>cT2C <span class="ot">&lt;-</span> <span class="fl">1.1680</span></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>cT3 <span class="ot">&lt;-</span> <span class="fl">1.2380</span></span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>MSKCCprob <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>MSKCCprob <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(MSKCCcohort1<span class="sc">$</span>MSKCCprob)</span>
 <span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>MSKCCprob <span class="ot">&lt;-</span> <span class="st">""</span></span>
-<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>MSKCCprob <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(MSKCCcohort1<span class="sc">$</span>MSKCCprob)</span>
-<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(MSKCCcohort1)){  </span>
-<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>  MSKCCcohort1[i, <span class="st">"MSKCCprob"</span>] <span class="ot">&lt;-</span> InterceptMSKCC <span class="sc">+</span> Age<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"Alder"</span>] <span class="sc">+</span> PSA<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"PSAutredn"</span>] <span class="sc">+</span> PSAspline1<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"PSAsp1var"</span>] <span class="sc">+</span> PSAspline2<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"PSAsp2var"</span>] <span class="sc">+</span> BioGGG2<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"ISUP2"</span>] <span class="sc">+</span> BioGGG3<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"ISUP3"</span>] <span class="sc">+</span> BioGGG4<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"ISUP4"</span>] <span class="sc">+</span> BioGGG5<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"ISUP5"</span>] <span class="sc">+</span> cT2A<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"cT2a"</span>] <span class="sc">+</span> cT2B<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"cT2b"</span>] <span class="sc">+</span> cT2C<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"cT2c"</span>] <span class="sc">+</span> cT3<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"cT3"</span>] </span>
-<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(MSKCCcohort1)){  </span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>  MSKCCcohort1[i, <span class="st">"MSKCCprob"</span>] <span class="ot">&lt;-</span> InterceptMSKCC <span class="sc">+</span> Age<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"Age"</span>] <span class="sc">+</span> PSA<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"PSA"</span>] <span class="sc">+</span> PSAspline1<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"PSAsp1var"</span>] <span class="sc">+</span> PSAspline2<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"PSAsp2var"</span>] <span class="sc">+</span> BioGGG2<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"BioGGG2"</span>] <span class="sc">+</span> BioGGG3<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"BioGGG3"</span>] <span class="sc">+</span> BioGGG4<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"BioGGG4"</span>] <span class="sc">+</span> BioGGG5<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"BioGGG5"</span>] <span class="sc">+</span> cT2A<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"cT2a"</span>] <span class="sc">+</span> cT2B<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"cT2b"</span>] <span class="sc">+</span> cT2C<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"cT2c"</span>] <span class="sc">+</span> cT3<span class="sc">*</span>MSKCCcohort1[i, <span class="st">"cT3"</span>] </span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>MSKCCprobpred <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>MSKCCprobpred <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(MSKCCcohort1<span class="sc">$</span>MSKCCprobpred)</span>
 <span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>MSKCCprobpred <span class="ot">&lt;-</span> <span class="st">""</span></span>
-<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>MSKCCcohort1<span class="sc">$</span>MSKCCprobpred <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(MSKCCcohort1<span class="sc">$</span>MSKCCprobpred)</span>
-<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(MSKCCcohort1)){</span>
-<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>  MSKCCcohort1[i, <span class="st">"MSKCCprobpred"</span>] <span class="ot">&lt;-</span>  <span class="fu">exp</span>(MSKCCcohort1[i,<span class="st">"MSKCCprob"</span>]) <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(MSKCCcohort1[i,<span class="st">"MSKCCprob"</span>])) </span>
-<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a><span class="do">####</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(MSKCCcohort1)){</span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>  MSKCCcohort1[i, <span class="st">"MSKCCprobpred"</span>] <span class="ot">&lt;-</span>  <span class="fu">exp</span>(MSKCCcohort1[i,<span class="st">"MSKCCprob"</span>]) <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(MSKCCcohort1[i,<span class="st">"MSKCCprob"</span>])) </span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a><span class="do">####</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><a href="https://www.sciencedirect.com/science/article/pii/S0302283811012309?via%3Dihub">Briganti 2012</a>, we used the coeficients from <a href="https://www.sciencedirect.com/science/article/abs/pii/S1078143920301526?via%3Dihub">Diamand et al</a>.</p>
 <div class="cell">
@@ -361,20 +360,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Briganti 2019 (<a href="https://www.sciencedirect.com/science/article/abs/pii/S030228381830753X?via%3Dihub">link to reference</a>)</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>InterceptBriganti <span class="ot">=</span> <span class="sc">-</span><span class="fl">4.5974</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>PSABriganti <span class="ot">=</span> <span class="fl">0.0416</span></span>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>Intercept <span class="ot">=</span> <span class="sc">-</span><span class="fl">4.5974</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>PSA <span class="ot">=</span> <span class="fl">0.0416</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>ECE <span class="ot">=</span> <span class="fl">1.2214</span></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>SVI <span class="ot">=</span> <span class="fl">1.4672</span></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>mmdiam <span class="ot">=</span> <span class="fl">0.0311</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>BriGG3 <span class="ot">=</span> <span class="fl">1.2032</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>BriGG4 <span class="ot">=</span> <span class="fl">1.8063</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>BioGGG3 <span class="ot">=</span> <span class="fl">1.2032</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>BioGGG4 <span class="ot">=</span> <span class="fl">1.8063</span></span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>Corepos <span class="ot">=</span> <span class="fl">0.0119</span></span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>briganti2019<span class="sc">$</span>Brigantiprob <span class="ot">&lt;-</span> <span class="st">""</span></span>
 <span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>briganti2019<span class="sc">$</span>Brigantiprob <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(briganti2019<span class="sc">$</span>Brigantiprob)</span>
 <span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(briganti2019)){  </span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  briganti2019[i, <span class="st">"Brigantiprob"</span>] <span class="ot">&lt;-</span> InterceptBriganti  <span class="sc">+</span> PSABriganti<span class="sc">*</span>briganti2019[i, <span class="st">"PSAutredn"</span>]  <span class="sc">+</span> ECE<span class="sc">*</span>briganti2019[i, <span class="st">"mr_ECE"</span>] <span class="sc">+</span> SVI<span class="sc">*</span>briganti2019[i, <span class="st">"mr_SVI"</span>] <span class="sc">+</span> mmdiam<span class="sc">*</span>briganti2019[i, <span class="st">"MRindexTumorL1"</span>] <span class="sc">+</span> BriGG3<span class="sc">*</span>briganti2019[i, <span class="st">"ISUP3"</span>] <span class="sc">+</span> BriGG4<span class="sc">*</span>briganti2019[i, <span class="st">"ISUP4"</span>] <span class="sc">+</span> Corepos<span class="sc">*</span>briganti2019[i, <span class="st">"PercPosCores"</span>] </span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  briganti2019[i, <span class="st">"Brigantiprob"</span>] <span class="ot">&lt;-</span> InterceptBriganti  <span class="sc">+</span> PSABriganti<span class="sc">*</span>briganti2019[i, <span class="st">"PSA"</span>]  <span class="sc">+</span> ECE<span class="sc">*</span>briganti2019[i, <span class="st">"ECE"</span>] <span class="sc">+</span> SVI<span class="sc">*</span>briganti2019[i, <span class="st">"SVI"</span>] <span class="sc">+</span> mmdiam<span class="sc">*</span>briganti2019[i, <span class="st">"mmdiam"</span>] <span class="sc">+</span> BriGG3<span class="sc">*</span>briganti2019[i, <span class="st">"BioGGG4"</span>] <span class="sc">+</span> BriGG4<span class="sc">*</span>briganti2019[i, <span class="st">"BioGGG5"</span>] <span class="sc">+</span> Corepos<span class="sc">*</span>briganti2019[i, <span class="st">"Corepos"</span>] </span>
 <span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a> </span>
 <span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
@@ -389,23 +388,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="do">##############</span></span>
 <span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Recalibrated coeficients</span></span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>InterceptBriganti <span class="ot">=</span> <span class="sc">-</span><span class="fl">4.231</span></span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>PSABriganti <span class="ot">=</span> <span class="fl">0.030</span> </span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>Intercept <span class="ot">=</span> <span class="sc">-</span><span class="fl">4.231</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>PSA <span class="ot">=</span> <span class="fl">0.030</span> </span>
 <span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>ECE <span class="ot">=</span> <span class="fl">0.900</span></span>
 <span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>SVI <span class="ot">=</span> <span class="fl">1.081</span></span>
 <span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>mmdiam <span class="ot">=</span> <span class="fl">0.0229</span> </span>
-<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>BriGG3 <span class="ot">=</span> <span class="fl">0.886</span> </span>
-<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>BriGG4 <span class="ot">=</span> <span class="fl">1.331</span> </span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>BioGGGG3 <span class="ot">=</span> <span class="fl">0.886</span> </span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>BioGGG4 <span class="ot">=</span> <span class="fl">1.331</span> </span>
 <span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>Corepos <span class="ot">=</span> <span class="fl">0.010</span></span>
 <span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Coeficients after refiting the model</span></span>
-<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>InterceptBriganti <span class="ot">=</span> <span class="sc">-</span><span class="fl">3.542</span></span>
-<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>PSABriganti <span class="ot">=</span> <span class="fl">0.007</span> </span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>Intercept <span class="ot">=</span> <span class="sc">-</span><span class="fl">3.542</span></span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>PSA <span class="ot">=</span> <span class="fl">0.007</span> </span>
 <span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>ECE <span class="ot">=</span> <span class="fl">0.927</span></span>
 <span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>SVI <span class="ot">=</span> <span class="fl">2.203</span></span>
 <span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>mmdiam <span class="ot">=</span> <span class="fl">0.017</span> </span>
-<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>BriGG3 <span class="ot">=</span> <span class="fl">0.239</span></span>
-<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>BriGG4 <span class="ot">=</span> <span class="fl">0.691</span> </span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>BioGGG3 <span class="ot">=</span> <span class="fl">0.239</span></span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>BioGGG4 <span class="ot">=</span> <span class="fl">0.691</span> </span>
 <span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>Corepos <span class="ot">=</span> <span class="fl">0.010</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>There as been a recent update of the MSKCC model</p>
