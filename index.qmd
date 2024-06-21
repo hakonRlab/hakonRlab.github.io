@@ -193,37 +193,7 @@ for (i in 1:nrow(MSKCCcohort1)){
 
 ```
 
-There as been a recent update of the MSKCC model
 
-```{r, eval=FALSE}
-
-#last updated December 15 2023
-
-
-knot1 <- 0.2 #PSAPreopKnot1
-knot2 <- 4.8 #PSAPreopKnot2
-knot3 <- 7.33 #PSAPreopKnot3
-knot4 <- 307 #PSAPreopKnot3
-
-
-InterceptMSKCC <- -5.9587
-Age <- 0.0079
-PSA <- 0.1754
-PSAspline1 <- -0.0011
-PSAspline2 <- 0.0003
-BioGGG2 <- 1.5255
-BioGGG3 <- 2.5725
-BioGGG4 <- 2.7054
-BioGGG5 <- 3.4228
-cT2A <- 0.2895
-cT2B <- 0.6206
-cT2C <- 0.9285
-cT3 <- 1.2689
-```
-
-Calibration plot of updated MSKCC using val.prob function from the rms package
-
-![](MSKCC_calplot_valprob_DecUpdate.jpg)
 
 [Briganti 2012](https://www.sciencedirect.com/science/article/pii/S0302283811012309?via%3Dihub), we used the coeficients from [Diamand et al](https://www.sciencedirect.com/science/article/abs/pii/S1078143920301526?via%3Dihub).
 
@@ -303,3 +273,35 @@ BriGG3 = 0.239
 BriGG4 = 0.691 
 Corepos = 0.010
 ```
+
+There as been a recent update of the MSKCC model
+
+```{r, eval=FALSE}
+
+#last updated December 15 2023
+
+
+knot1 <- 0.2 #PSAPreopKnot1
+knot2 <- 4.8 #PSAPreopKnot2
+knot3 <- 7.33 #PSAPreopKnot3
+knot4 <- 307 #PSAPreopKnot3
+
+
+InterceptMSKCC <- -5.9587
+Age <- 0.0079
+PSA <- 0.1754
+PSAspline1 <- -0.0011
+PSAspline2 <- 0.0003
+BioGGG2 <- 1.5255
+BioGGG3 <- 2.5725
+BioGGG4 <- 2.7054
+BioGGG5 <- 3.4228
+cT2A <- 0.2895
+cT2B <- 0.6206
+cT2C <- 0.9285
+cT3 <- 1.2689
+```
+
+Calibration plot of updated MSKCC using val.prob function from the rms package
+
+![](MSKCC_calplot_valprob_DecUpdate.jpg)
