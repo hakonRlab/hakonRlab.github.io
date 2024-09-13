@@ -290,7 +290,7 @@ InterceptMSKCC <- -5.9587
 Age <- 0.0079
 PSA <- 0.1754
 PSAspline1 <- -0.0011
-PSAspline2 <- 0.0003
+PSAspline2 <- 0.003
 BioGGG2 <- 1.5255
 BioGGG3 <- 2.5725
 BioGGG4 <- 2.7054
