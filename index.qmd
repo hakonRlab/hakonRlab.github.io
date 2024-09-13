@@ -133,11 +133,11 @@ The scripts bellow are the ones used to calculate the predictied probalitities o
 [MSKCC nomogram](https://www.mskcc.org/nomograms/prostate/pre_op/coefficients)
 
 ```{r, eval=FALSE}
-#Knot values last updated June 2 2022
+#last updated December 15 2023
 
 knot1 <- 0.2 #PSAPreopKnot1
-knot2 <- 4.78 #PSAPreopKnot2
-knot3 <- 7.3 #t PSAPreopKnot3
+knot2 <- 4.8 #PSAPreopKnot2
+knot3 <- 7.33 #PSAPreopKnot3
 knot4 <- 307 #PSAPreopKnot3
 
 
@@ -156,21 +156,22 @@ for (i in 1:nrow(MSKCCcohort1)){MSKCCcohort1[i, "PSAsp2var"] <- max(MSKCCcohort1
 max(MSKCCcohort1[i, "PSAutredn"] - knot4, 0)^3 *((knot3 -knot2)/(knot4 - knot3))
 }
 
+#last updated December 15 2023
 
-#last updated June 2 2022
-InterceptMSKCC <- -6.6003
-Age <- 0.0112
-PSA <- 0.2979
-PSAspline1 <- -0.0023
-PSAspline2 <- 0.0066
-BioGGG2 <- 1.4359
-BioGGG3 <- 2.4241
-BioGGG4 <- 2.6256
-BioGGG5 <- 3.4143
-cT2A <- 0.3373
-cT2B <- 0.6880
-cT2C <- 1.1680
-cT3 <- 1.2380
+InterceptMSKCC <- -5.9587
+Age <- 0.0079
+PSA <- 0.1754
+PSAspline1 <- -0.0011
+PSAspline2 <- 0.003
+BioGGG2 <- 1.5255
+BioGGG3 <- 2.5725
+BioGGG4 <- 2.7054
+BioGGG5 <- 3.4228
+cT2A <- 0.2895
+cT2B <- 0.6206
+cT2C <- 0.9285
+cT3 <- 1.2689
+
 
 
 MSKCCcohort1$MSKCCprob <- ""
@@ -273,34 +274,7 @@ BioGGG4 = 0.691
 Corepos = 0.010
 ```
 
-There as been a recent update of the MSKCC model
-
-```{r, eval=FALSE}
-
-#last updated December 15 2023
 
 
-knot1 <- 0.2 #PSAPreopKnot1
-knot2 <- 4.8 #PSAPreopKnot2
-knot3 <- 7.33 #PSAPreopKnot3
-knot4 <- 307 #PSAPreopKnot3
 
 
-InterceptMSKCC <- -5.9587
-Age <- 0.0079
-PSA <- 0.1754
-PSAspline1 <- -0.0011
-PSAspline2 <- 0.003
-BioGGG2 <- 1.5255
-BioGGG3 <- 2.5725
-BioGGG4 <- 2.7054
-BioGGG5 <- 3.4228
-cT2A <- 0.2895
-cT2B <- 0.6206
-cT2C <- 0.9285
-cT3 <- 1.2689
-```
-
-Calibration plot of updated MSKCC using val.prob function from the rms package
-
-![](MSKCC_calplot_valprob_DecUpdate.jpg)
