@@ -4,9 +4,9 @@ title: "The Oslo model"
 
 Shiny App under construction
 
-![Pilot shiny app](images/The_Oslo_model.png){fig-align="center"}
+![Pilot shiny app](images/The_Oslo_model1.png){fig-align="center"}
 
-The Oslo model can be downloaded as an rds file form
+The Oslo model can be downloaded as a rds file form
 
 [Oslo_model_public](https://github.com/hakonRlab/hakonRlab.github.io)
 
