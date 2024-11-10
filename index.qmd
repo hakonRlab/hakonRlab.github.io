@@ -128,7 +128,7 @@ ggplotly(oslo)
 
 </iframe>
 
-The scripts bellow are the ones used to calculate the predictied probalitities o f the OUH cohort when evaluating the MSKCC, Briganti 2012 and Briganti 2019 models
+The scripts bellow are the ones used to calculate the predictied probalitities of the OUH cohort when evaluating the MSKCC, Briganti 2012 and Briganti 2019 models
 
 [MSKCC nomogram](https://www.mskcc.org/nomograms/prostate/pre_op/coefficients)
 
