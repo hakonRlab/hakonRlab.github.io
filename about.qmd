@@ -4,7 +4,7 @@ title: "The Oslo model"
 
 Shiny App under construction
 
-![Pilot shiny app](images/The_Oslo_model1.png){fig-align="center"}
+![](images/Oslo_model_shinyApp.png)
 
 The Oslo model can be downloaded as a rds file form
 
