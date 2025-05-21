@@ -272,6 +272,19 @@ mmdiam = 0.017
 BioGGG3 = 0.239
 BioGGG4 = 0.691 
 Corepos = 0.010
+
+
+# Coeficients Briganti model 2 (without % positive systematic biopsi core)
+Intercept = -4.231
+PSA = 0. 
+ECE = 0.
+SVI = 1.
+mmdiam = 0. 
+BioGGGG3 = 0. 
+BioGGG4 = 1. 
+
+
+
 ```
 
 
