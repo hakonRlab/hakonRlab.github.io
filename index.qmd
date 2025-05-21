@@ -195,33 +195,6 @@ for (i in 1:nrow(MSKCCcohort1)){
 
 
 
-[Briganti 2012](https://www.sciencedirect.com/science/article/pii/S0302283811012309?via%3Dihub), we used the coeficients from [Diamand et al](https://www.sciencedirect.com/science/article/abs/pii/S1078143920301526?via%3Dihub).
-
-```{r, eval=FALSE}
-Intercept = -5.3234
-PSA = 0.0361
-bricT2 = 0.5874
-bricT3 = 1.9940
-primgleason = 1.2954 
-sekgleason = 0.3722
-Corepos = 0.0269
-
-briganti2012$Brigantiprob <- ""
-briganti2012$Brigantiprob <- as.numeric(briganti2012$Brigantiprob)
-
-for (i in 1:nrow(briganti2012)){  
- briganti2012[i, "Brigantiprob"] <- InterceptBriganti  + PSABriganti*briganti2012[i, "PSA"]  + bricT2*briganti2012[i, "bricT2"] + bricT3*briganti2012[i, "bricT3"] + primgleason*briganti2012[i, "primgleason"] + sekgleason*briganti2012[i, "sekgleason"] + Corepos*briganti2012[i, "PercPosCores"] 
- 
-}
-
-briganti2012$Brigantiprobpred <- ""
-briganti2012$Brigantiprobpred <- as.numeric(briganti2012$Brigantiprobpred)
-
-for (i in 1:nrow(briganti2012)){
-  briganti2012[i, "Brigantiprobpred"] <-  exp(briganti2012[i,"Brigantiprob"]) / (1 + exp(briganti2012[i,"Brigantiprob"])) 
-}
-```
-
 Briganti 2019 ([link to reference](https://www.sciencedirect.com/science/article/abs/pii/S030228381830753X?via%3Dihub))
 
 ```{r, eval=FALSE}
@@ -274,14 +247,14 @@ BioGGG4 = 0.691
 Corepos = 0.010
 
 
-# Coeficients Briganti model 2 (without % positive systematic biopsi core)
-Intercept = -4.231
-PSA = 0. 
-ECE = 0.
-SVI = 1.
-mmdiam = 0. 
-BioGGGG3 = 0. 
-BioGGG4 = 1. 
+# Coeficients Briganti model 2 (without % positive cores with csPCa systematic biopsy)
+InterceptBriganti = -4.5974
+PSABriganti = 0.039 
+ECE = 1.203
+SVI = 1.69
+mmdiam = 0.039 
+BriGG3 = 1.221
+BriGG4 = 1.707 
 
 
 
