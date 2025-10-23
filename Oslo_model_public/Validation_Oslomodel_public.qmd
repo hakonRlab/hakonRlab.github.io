@@ -1,0 +1,112 @@
+---
+title: "Validation_Oslomodel"
+format: html
+editor: visual
+---
+
+## The Oslo model
+
+We have developed the Oslo model using the rmsb package with a function (stackMI) that uses Bayesian logistic regression.
+
+## Variable names and recategorizing
+
+PSA, prostate volume and length index lesion at MRI are all continuous variables. We have used restricted cubic spline for all three variables and an interaction term between PSA and prostate volume.
+
+**ISUP grade is categorized as**
+
+ISUP 1 and 2 = 1
+
+ISUP 3 = 2
+
+ISUP 4 = 3
+
+ISUP 5 = 4
+
+**Clinical stage at MRI is categorized as**
+
+T1 and T2 = 1
+
+T3a = 2
+
+T3b and T4 = 3
+
+**The names of the variables in the model are**
+
+PSAutredn = PSA
+
+ProstVolum = Prostate voulme
+
+mr_cT = clinical T stage at MRI
+
+MRindexTumorL1 = length/diameter index lesion at MRI
+
+ISUP_tab = ISUP grade group
+
+```{r}
+library(tidyverse)
+#load("cohort)
+
+df <- df %>% 
+  rename(
+     PSAutredn = "PSA",  
+     ProstVolum = "Prostate voulme",
+     mr_cT = "clinical T stage at MRI",
+     MRindexTumorL1 = "length index lesion at MRI",
+     ISUP_tab = "ISUP grade"   
+  )
+
+## recategorizing ISUP garde
+df <- df %>% mutate(ISUP_tab = ifelse(BiopsiGleason == "6" | BiopsiGleason == "7a", 1,
+                                ifelse(BiopsiGleason == "7b", 2,
+                                 ifelse(BiopsiGleason == "8", 3,
+                                  ifelse(BiopsiGleason == "9" | BiopsiGleason == "10" , 4, NA)))))
+
+df$ISUP_tab <- as.factor(df$ISUP_tab)
+
+# recategorizing MRI T-stage
+df <- df %>% mutate(mr_cT = ifelse(T_rad__label == "T1" | T_rad__label == "T2", 1,
+                      ifelse(T_rad__label == "T3a", 2,
+                             ifelse(T_rad__label == "T3b", 3, NA))))
+
+
+df$mr_cT <- as.factor(df$mr_cT)
+
+df <- omit.na(df)
+
+df <- as.data.frame(df)
+```
+
+Here is the script that we used when validating the Oslo model using our temporal cohort.
+
+```{r}
+library(rmsb)
+oslo_model <- readRDS("oslo_model_public.rds")
+
+
+# Estimating predicted probabilities using the Oslo model
+
+valoslomodel <-  predict(oslo_model, newdata = your_cohort_name, fun = plogis, funint = FALSE)
+
+#New data table with pN status and predicted probabilities
+
+y <- valoslomodel$linear.predictors
+x <- your_cohort_name$pN
+x_name <- "pN"
+y_name <- "pred_var"
+
+
+x <- as.factor(x)
+
+valdata <- data.frame(x,y)
+names(valdata) <- c(x_name,y_name)
+
+testval <- val.prob(valdata$pred_var, as.numeric(valdata$pN) , pl=FALSE) %>% round(3)
+
+testval
+
+
+```
+
+We have used the R tutorial by Darren Dahly to evaluate the model and make the calibration plots.
+
+https://darrendahly.github.io/post/homr
